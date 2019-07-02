@@ -1,4 +1,5 @@
 build/
+Plutonium/Build/
 *.cbp
 *.layout
 *.elf

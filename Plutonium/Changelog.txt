@@ -1,0 +1,8 @@
+- added some get functions to Menu
+- added ability to turn off focus on menu
+- added sideshadow do rectangle
+- added iconScale to Menu
+- added iconOnly to menu
+- added setting font size in constructor of button
+- edited method Menu::SetSelectedIndex
+- added Menu::SetScrollIndex
