@@ -44,7 +44,7 @@ Planned features for the very next release:
 
 ## Compiling
 
-You need to clone Apollo's repo to your computer using 'git clone https://github.com/evo-brut3/Apollo/'.
+You need to clone Apollo's repo to your computer using `git clone https://github.com/evo-brut3/Apollo/`.
 
 Make sure that you have the newest release of [devkitPro and libNX](https://switchbrew.org/wiki/Setting_up_Development_Environment).
 
