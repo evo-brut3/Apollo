@@ -72,6 +72,6 @@ Voila.
 - [XorTroll](https://github.com/XorTroll/) for the amazing Plutonium which allowed Apollo to look like this and the Goldleaf which is a mine of knowledge.
 - [GilFerraz](https://www.reddit.com/user/GilFerraz/) for his beautiful Miiverse UI concept which inspired me to create sidebar.
 - [Lucas Lacerda](https://dribbble.com/LucasLacerdaUX) for his Nintendo Switch UI Concept.
-- [jaames](https://github.com/jaames/) for the nx-hbmenu mockup which help me with design.
+- [jaames](https://github.com/jaames/) for the nx-hbmenu mockup which helped me with the design.
 - **Nintendo** for security <3.
 
