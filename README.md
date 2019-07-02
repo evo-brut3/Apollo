@@ -25,7 +25,11 @@ Apollo's current features are:
 - **Sorting items**: Alphabetically or reversed.
 
 ## Screenshots
-
+  <p align="center"><img src="https://raw.githubusercontent.com/evo-brut3/Apollo/master/assets/main_screen.jpg"></p>
+  <p align="center"><img src="https://raw.githubusercontent.com/evo-brut3/Apollo/master/assets/selecting_files.jpg"></p>
+  <p align="center"><img src="https://raw.githubusercontent.com/evo-brut3/Apollo/master/assets/copying_files.jpg"></p>
+  <p align="center"><img src="https://raw.githubusercontent.com/evo-brut3/Apollo/master/assets/sorting_and_help.jpg"></p>
+  
 ## Planned features
 
 Planned features for the very next release:
@@ -68,6 +72,6 @@ Voila.
 - [XorTroll](https://github.com/XorTroll/) for the amazing Plutonium which allowed Apollo to look like this and the Goldleaf which is a mine of knowledge.
 - [GilFerraz](https://www.reddit.com/user/GilFerraz/) for his beautiful Miiverse UI concept which inspired me to create sidebar.
 - [Lucas Lacerda](https://dribbble.com/LucasLacerdaUX) for his Nintendo Switch UI Concept.
-- [jaames](https://github.com/jaames/) for the nx-hbmenu mockup which help with design.
+- [jaames](https://github.com/jaames/) for the nx-hbmenu mockup which help me with design.
 - **Nintendo** for security <3.
 
