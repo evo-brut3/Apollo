@@ -33,6 +33,7 @@ class MainApplication : public pu::Application
 
         // debug
         void SetDebugText(std::string _text);
+        //void LogDebugText(std::string _text);
 
     private:
         /// Helpful variables
@@ -89,7 +90,6 @@ class MainApplication : public pu::Application
         pu::element::MenuItem *deleteButton;
         pu::element::MenuItem *renameButton;
         pu::element::MenuItem *exitButton;
-        pu::element::MenuItem *testButton;
 
         // buttons
         pu::element::Image *button_A_icon;

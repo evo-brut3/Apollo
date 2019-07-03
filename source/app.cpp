@@ -27,7 +27,14 @@ void MainApplication::SetDebugText(std::string _text)
 {
     this->debugText->SetText(_text);
 }
-
+/*
+#include <fstream>
+void MainApplication::LogDebugText(std::string _text)
+{
+    std::ofstream debug(R"(sdmc:/Apollo_log.txt)", std::ios::app);
+    debug << _text << std::endl;
+}
+*/
 MainApplication::MainApplication()
 {
     app = this;
@@ -126,7 +133,6 @@ void MainApplication::Update()
         this->deleteButton->SetIcon(GetRomFsResource("delete" + help));
         this->renameButton->SetIcon(GetRomFsResource("rename" + help));
         this->exitButton->SetIcon(GetRomFsResource("exit" + help));
-        this->testButton->SetIcon(GetRomFsResource("exit" + help));
 
         this->prehelpinfo = this->helpinfo;
     }
@@ -244,12 +250,6 @@ void MainApplication::InitAllLayouts()
     this->sidebarMenu->AddItem(exitButton);
     allMenuItems.push_back(this->exitButton);
 
-    this->testButton = new pu::element::MenuItem("");
-    this->testButton->SetIcon(GetRomFsResource("exit"));
-    this->testButton->AddOnClick(std::bind(&MainApplication::RenameAction, this), KEY_A); // to do: delete
-    this->sidebarMenu->AddItem(testButton);
-    allMenuItems.push_back(this->testButton);
-
     // buttons
     int btnSize = 25;
     u32 btnFntSize = 23;
@@ -288,7 +288,7 @@ void MainApplication::InitAllLayouts()
 
     this->debugText = new pu::element::TextBlock(1, 1, "debug");
     debugText->SetColor({242, 38, 19, 1});
-    allElements.push_back(this->debugText);
+    //allElements.push_back(this->debugText);
 
     // load layouts and give them all the necessary elements
     this->LoadLayout(mainLayout);
@@ -375,6 +375,7 @@ void MainApplication::SortAction()
 
 void MainApplication::InfoAction()
 {
+    this->SetDebugText(std::to_string(fs::IsDir(this->GetBrowser()->GetFilePathName())));
 }
 
 void MainApplication::HelpAction()

@@ -18,12 +18,12 @@ namespace fs
         return (strcmp(_name, ".") && strcmp(_name, ".."));
     }
 
-    inline void MakeDir(std::string _path)
+    inline void MakeDir(const std::string &_path)
     {
         mkdir(_path.c_str(), 0777);
     }
 
-    std::vector<File> OpenDir(std::string _path)
+    std::vector<File> OpenDir(const std::string &_path)
     {
         DIR* dir;
         struct dirent* ent;
@@ -53,7 +53,7 @@ namespace fs
         return files;
     }
 
-    bool IsDir(std::string _path)
+    bool IsDir(const std::string &_path)
     {
         struct stat buf;
         stat((char *)_path.c_str(), &buf);
@@ -66,7 +66,7 @@ namespace fs
         return (stat(_pathname.c_str(), &buff) == 0);
     }
 
-    void GetContents(std::string _path)
+    void GetContents(const std::string &_path)
     {
         Files.clear();
         Directories.clear();
@@ -98,7 +98,7 @@ namespace fs
         closedir(dir);
     }
 
-    void CopyFile(std::string _source, std::string _dest)
+    void CopyFile(const std::string &_source, const std::string &_dest)
     {
         std::ifstream source(_source, std::ios::binary);
         std::ofstream dest(_dest, std::ios::binary);
@@ -117,7 +117,7 @@ namespace fs
         dest.close();
     }
 
-    void CopyDir(std::string _source, std::string _dest)
+    void CopyDir(const std::string &_source, const std::string &_dest)
     {
         MakeDir(_dest);
         GetContents(_source);
@@ -127,6 +127,7 @@ namespace fs
             for (auto &d : Directories)
             {
                 CopyDir(_source + R"(/)" + d, _dest + R"(/)" + d);
+                app->GetCopyLayout()->Update(_source + R"(/)" + d, _dest + R"(/)" + d);
             }
         }
 
@@ -136,16 +137,17 @@ namespace fs
             for (auto &f : Files)
             {
                 CopyFile(_source + R"(/)" + f, _dest + R"(/)" + f);
+                app->GetCopyLayout()->Update(_source + R"(/)" + f, _dest + R"(/)" + f);
             }
         }
     }
 
-    int RenameFile(std::string _pathname, std::string _newname)
+    int RenameFile(const std::string &_pathname, const std::string &_newname)
     {
         return (rename(_pathname.c_str(), _newname.c_str()));
     }
 
-    int Remove(std::string _filepath)
+    int Remove(const std::string &_filepath)
     {
         int result;
         switch (IsDir(_filepath))
@@ -161,7 +163,7 @@ namespace fs
         return result;
     }
 
-    int DeleteDirRecursive(std::string _pathname)
+    int DeleteDirRecursive(const std::string &_pathname)
     {
         int result;
         DIR *dir = opendir(_pathname.c_str());
@@ -192,7 +194,7 @@ namespace fs
         return result;
     }
 
-    void ListFilesRecursive(std::string _baselocation, std::string _filename, std::vector<ClipboardNode> &_filelist, std::string _pathname)
+    void ListFilesRecursive(const std::string &_baselocation, const std::string &_filename, std::vector<ClipboardNode> &_filelist, const std::string &_pathname)
     {
         std::string path;
 
@@ -221,7 +223,7 @@ namespace fs
         closedir(dir);
     }
 
-    u32 CountFilesRecursive(std::string _pathname, u32 _number)
+    u32 CountFilesRecursive(const std::string &_pathname, u32 _number)
     {
         DIR *dir = opendir((_pathname).c_str());
         struct dirent *ent;

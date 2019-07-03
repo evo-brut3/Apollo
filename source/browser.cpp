@@ -139,7 +139,7 @@ void Browser::CopyFiles()
                 (
                     f.path,                                     // base
                     R"(/)" + f.name,                            // pathname
-                    fs::IsDir(f.path + R"(/)" + f.name)    // directory
+                    fs::IsDir(f.path + R"(/)" + f.name)         // directory
                 );
 
                 clipboardHeader.push_back(f.pathname);
@@ -154,7 +154,7 @@ void Browser::CopyFiles()
         (
             this->GetFilePath(),                        // base
             R"(/)" + this->GetFileName(),               // pathname
-            fs::IsDir(this->GetFilePathName())     // directory
+            fs::IsDir(this->GetFilePathName())          // directory
         );
         clipboardHeader.push_back(this->GetFilePathName());
         clipboard.push_back(node);
@@ -201,7 +201,7 @@ void Browser::PasteFiles()
     app->GetCopyLayout()->Reset();
     app->LoadLayout(app->GetCopyLayout());
     app->GetCopyLayout()->Start(clipboard.size(), this->moveFlag);
-    app->CallForRender();
+    //app->CallForRender();
 
     for (auto &f : clipboard)
     {
@@ -322,9 +322,6 @@ void Browser::PasteFiles()
                 break;
             }
         }
-
-        app->GetCopyLayout()->Update(f.base + f.path, currentPath + f.path);
-        app->CallForRender();
     }
 
 

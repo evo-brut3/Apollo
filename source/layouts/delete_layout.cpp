@@ -2,10 +2,10 @@
 #include "layouts/delete_layout.h"
 #include "app.h"
 
+extern MainApplication *app;
+
 namespace ui
 {
-    extern MainApplication *app;
-
     DeleteLayout::DeleteLayout()
     {
         this->deleteTextHeader = new pu::element::TextBlock(146+30+30, 220, "");

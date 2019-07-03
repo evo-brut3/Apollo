@@ -2,10 +2,10 @@
 #include "layouts/copy_layout.h"
 #include "app.h"
 
+extern MainApplication *app;
+
 namespace ui
 {
-    extern MainApplication *app;
-
     CopyLayout::CopyLayout()
     {
         this->copyTextHeader = new pu::element::TextBlock(146+30+30, 220, "");
@@ -44,10 +44,12 @@ namespace ui
         this->copyTextHeader->SetText(action + std::to_string(_value) + item);
         this->copyProgressBar->SetMaxValue(_value);
         this->copyProgressBar->ClearProgress();
+        app->CallForRender();
     }
 
-    void CopyLayout::Update(std::string _from, std::string _to)
+    void CopyLayout::Update(const std::string &_from, const std::string &_to)
     {
+        /*
         if (_from.length() > 58)
         {
             _from.erase(_from.begin(), _from.end()-58);
@@ -59,17 +61,19 @@ namespace ui
             _to.erase(_to.begin(), _to.end()-59);
             _to.insert(0, "...");
         }
-
-        this->copyTextFrom->SetText("From: " + _from);
-        this->copyTextTo->SetText("To: " + _to);
+        */
+        this->copyTextFrom->SetText("From: " + ((_from.length() > 58) ? "..." + _from.substr(_from.length() - 58) : _from));
+        this->copyTextTo->SetText("To: " + ((_to.length() > 59) ? "..." + _to.substr(_to.length() - 59) : _to));
 
         this->copyProgressBar->IncrementProgress(1);
+        app->CallForRender();
     }
 
     void CopyLayout::Finish()
     {
         this->copyTextHeader->SetText("Finishing...");
         this->copyTextTo->SetText("");
+        app->CallForRender();
     }
 
     void CopyLayout::FinishUpdate(std::string _item)
@@ -81,6 +85,7 @@ namespace ui
         }
 
         this->copyTextFrom->SetText("Deleting: " + _item);
+        app->CallForRender();
     }
 
     void CopyLayout::Reset()
@@ -89,5 +94,6 @@ namespace ui
         this->copyTextHeader->SetText("");
         this->copyTextTo->SetText("");
         this->copyTextFrom->SetText("");
+        app->CallForRender();
     }
 }

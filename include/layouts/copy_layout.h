@@ -9,7 +9,7 @@ namespace ui
             CopyLayout();
             ~CopyLayout();
             void Start(u32 _value, bool _moveFlag);
-            void Update(std::string _from, std::string _to);
+            void Update(const std::string &_from, const std::string &_to);
             void Finish();
             void FinishUpdate(std::string _item);
             void Reset();
