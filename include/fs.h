@@ -12,8 +12,6 @@ namespace fs
     std::pair<std::vector<std::string>, std::vector<std::string>> GetContents(const std::string &_path);
     void CopyFile(const std::string &_source, const std::string &_dest);
     void CopyDir(const std::string &_source, const std::string &_dest);
-    int CopyFileOverwrite(const std::string &_source, const std::string &_dest, int _ovstatus);
-    int CopyDirOverwrite(const std::string &_source, const std::string &_dest, int _ovstatus);
     int RenameFile(const std::string &_newname, const std::string &_pathname);
     int Remove(const std::string &_filepath);
 

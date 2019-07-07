@@ -34,6 +34,6 @@ class Browser
         SortType sortType = SortType::Alphabetical;
         std::string currentPath = SDCARD_PATH;
         std::vector<File> currentFiles;
-        //std::vector<ClipboardNode> clipboard;
         std::vector<ClipboardNode> clipboard;
+        inline void CopyFileOrDir(std::string _source, std::string _dest, bool _type);
 };
