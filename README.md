@@ -44,25 +44,27 @@ Planned features for the very next release:
 
 ## Compiling
 
-You need to clone Apollo's repo to your computer using `git clone https://github.com/evo-brut3/Apollo/`.
-
+You need to clone Apollo's repo to your computer.
+``` bash
+$ git clone https://github.com/evo-brut3/Apollo.git
+```
 Make sure that you have the newest release of [devkitPro and libNX](https://switchbrew.org/wiki/Setting_up_Development_Environment).
 
 Use the pacman package manager to download and install following libraries: 
 ``` bash
-pacman -S switch-sdl2 switch-sdl2_ttf switch-sdl2_image switch-sdl2_gfx switch-sdl2_mixer switch-mesa switch-glad switch-glm switch-libdrm_nouveau switch-libwebp switch-libpng switch-freetype switch-bzip2 switch-libjpeg-turbo
+$ pacman -S switch-sdl2 switch-sdl2_ttf switch-sdl2_image switch-sdl2_gfx switch-sdl2_mixer switch-mesa switch-glad switch-glm switch-libdrm_nouveau switch-libwebp switch-libpng switch-freetype switch-bzip2 switch-libjpeg-turbo
 ```
 Compile the Plutonium.
 ``` bash
-cd Plutonium
-make
+$ cd Plutonium
+$ make
 ```
 Then copy content of `\Plutonium\Output\include` directory to the `\include` folder and the content of `\Plutonium\Output\lib` to the `\Plutonium\lib` directory.
 
 Then compile the Apollo.
 ``` bash
-cd ..
-make
+$ cd ..
+$ make
 ```
 Voila.
 
