@@ -126,7 +126,6 @@ void Browser::RemoveFiles()
 
 void Browser::CopyFiles()
 {
-    clipboardHeader.clear();
     clipboard.clear();
 
     if (numberOfSelected > 0)
@@ -141,10 +140,7 @@ void Browser::CopyFiles()
                     R"(/)" + f.name,                            // pathname
                     fs::IsDir(f.path + R"(/)" + f.name)         // directory
                 );
-
-                clipboardHeader.push_back(f.pathname);
                 clipboard.push_back(node);
-                fs::ListFilesRecursive(f.path + R"(/)", f.name, clipboard);
             }
         }
     }
@@ -156,9 +152,7 @@ void Browser::CopyFiles()
             R"(/)" + this->GetFileName(),               // pathname
             fs::IsDir(this->GetFilePathName())          // directory
         );
-        clipboardHeader.push_back(this->GetFilePathName());
         clipboard.push_back(node);
-        fs::ListFilesRecursive(this->GetFilePath() + R"(/)", this->GetFileName(), clipboard);
     }
 
     this->moveFlag = 0;
@@ -176,155 +170,68 @@ void Browser::PasteFiles()
     if (clipboard.at(0).base == currentPath)
         return;
 
-    // Check if the destined folder is the subfolder of the source folder
-    for (auto &f : clipboardHeader)
+    u32 number = 1;
+    for (auto &f : clipboard)
     {
-        std::size_t pos = this->currentPath.find(f);
+        // Check if the destined folder is the subfolder of the source folder
+        std::size_t pos = this->currentPath.find(f.base + f.path);
         if (pos == 0)
         {
             app->CreateShowDialog("Cannot paste files!", "The destined directory is the subdirectory of the source folder.", {"Ok"}, true);
             return;
         }
-    }
 
-    // Check if there are already existing files and flag them
-    for (auto &f : clipboard)
-    {
-        f.overwrite = fs::Exists(currentPath + f.path);
-        if (f.overwrite)
-            if (f.directory != fs::IsDir(currentPath + f.path))
-                f.overwrite++;
+        // List all of files of a single element of clipboard
+        std::vector<ClipboardNode> allFiles;
+        allFiles.push_back(f);
+        fs::ListFilesRecursive(f.base, f.path, allFiles);
+
+        // Check if there is a possibility that there are already existing files or if there are
+        // already other files/dirs which name is the same and flag them in clipboard
+        for (auto &g : allFiles)
+        {
+            if (fs::Exists(currentPath + g.path))
+            {
+                f.overwrite = 1;
+                break;
+            }
+        }
+
+        // Count all files in clipboard
+        number += allFiles.size();
     }
-    bool ovfile = false;
-    bool ovdir = false;
+    int overwritestatus = 0; // 0 - ask about overwriting, 1 - overwrite everything, 2 - do not overwrite anything
 
     app->GetCopyLayout()->Reset();
     app->LoadLayout(app->GetCopyLayout());
-    app->GetCopyLayout()->Start(clipboard.size(), this->moveFlag);
+    app->GetCopyLayout()->Start(number, this->moveFlag);
     //app->CallForRender();
 
     for (auto &f : clipboard)
     {
-        if (f.directory == 1)
+        switch (f.overwrite)
         {
-            switch (f.overwrite)
-            {
-                case 0:
+            default:
+            case 0: // no need to check if there are already the same files/dirs
+                if (f.directory == 1)
                     fs::CopyDir(f.base + f.path, currentPath + f.path);
-                break;
-
-                case 1: // ask for overwrite
-                {
-                    int c = 0;
-                    if (ovdir == false)
-                        c = app->CreateShowDialog("Do you want to overwrite this directory?", "Currently copied: " + f.base + f.path, {"No", "Yes", "Overwrite all"}, false);
-                    else
-                    {
-                            fs::DeleteDirRecursive(currentPath + f.path);
-                            fs::CopyDir(f.base + f.path, currentPath + f.path);
-                    }
-
-                    switch (c)
-                    {
-                        case 2:
-                            ovdir = true;
-                        case 1:
-                            fs::DeleteDirRecursive(currentPath + f.path);
-                            fs::CopyDir(f.base + f.path, currentPath + f.path);
-                        break;
-                    }
-                }
-                break;
-
-                case 2: // inform that couldn't overwrite
-                {
-                    std::string comm = "";
-                    std::vector<std::string> opts;
-                    if (this->moveFlag)
-                    {
-                        comm = "\nContinue in copying mode?";
-                        opts = {"Continue", "Cancel"};
-                    }
-                    else
-                        opts = {"Ok"};
-
-                    int b = app->CreateShowDialog("Cannot paste files!", "There is already a file with the same name as this directory: " + f.base + f.path + comm, opts, false);
-                    if (b == 0)
-                        moveFlag = false;
-                    if (b == 1)
-                    {
-                        this->moveFlag = 0;
-                        this->clipboardHeader.clear();
-                        this->clipboard.clear();
-                        this->Refresh();
-                        app->LoadLayout(app->GetMainLayout());
-                        return;
-                    }
-                }
-                break;
-            }
-        }
-        else
-        {
-            switch (f.overwrite)
-            {
-                case 0:
+                else
                     fs::CopyFile(f.base + f.path, currentPath + f.path);
-                break;
+            break;
 
-                case 1: // ask for overwrite
-                {
-                    int c = 0;
-                    if (ovfile == false)
-                        c = app->CreateShowDialog("Do you want to overwrite this file?", "Currently copied: " + f.base + f.path, {"No", "Yes", "Overwrite all"}, false);
-                    else
-                    {
-                            fs::DeleteDirRecursive(currentPath + f.path);
-                            fs::CopyFile(f.base + f.path, currentPath + f.path);
-                    }
-
-                    switch (c)
-                    {
-                        case 2:
-                            ovfile = true;
-                        case 1:
-                            fs::DeleteDirRecursive(currentPath + f.path);
-                            fs::CopyFile(f.base + f.path, currentPath + f.path);
-                        break;
-                    }
-                }
-                break;
-
-                case 2: // inform that couldn't overwrite
-                {
-                    std::string comm = "";
-                    std::vector<std::string> opts;
-                    if (this->moveFlag)
-                    {
-                        comm = "\nContinue in copying mode?";
-                        opts = {"Continue", "Cancel"};
-                    }
-                    else
-                        opts = {"Ok"};
-
-                    int b = app->CreateShowDialog("Cannot paste files!", "There is already a folder with the same name as this file: " + f.base + f.path + comm, opts, false);
-                    if (b == 0)
-                        moveFlag = false;
-                    if (b == 1)
-                    {
-                        this->moveFlag = 0;
-                        this->clipboardHeader.clear();
-                        this->clipboard.clear();
-                        app->LoadLayout(app->GetMainLayout());
-                        return;
-                    }
-                }
-                break;
-            }
+            /*
+            case 1: // check if there are already the same files/dirs
+                int o = (f.directory == 1) ? fs::CopyDirOverwrite(f.base + f.path, currentPath + f.path, overwritestatus) : fs::CopyFileOverwrite(f.base + f.path, currentPath + f.path, overwritestatus);
+                if (o == 2)
+                    overwritestatus = 1;
+                else if (o == 3)
+                    overwritestatus = 2;
+            break;
+            */
         }
     }
 
-
+    /*
     if (this->moveFlag == 1)
     {
         app->GetCopyLayout()->Finish();
@@ -338,7 +245,8 @@ void Browser::PasteFiles()
         this->clipboardHeader.clear();
         this->clipboard.clear();
     }
-
+    */
+    this->clipboard.clear();
     this->Refresh();
     app->LoadLayout(app->GetMainLayout());
 }

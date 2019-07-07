@@ -34,6 +34,6 @@ class Browser
         SortType sortType = SortType::Alphabetical;
         std::string currentPath = SDCARD_PATH;
         std::vector<File> currentFiles;
+        //std::vector<ClipboardNode> clipboard;
         std::vector<ClipboardNode> clipboard;
-        std::vector<std::string> clipboardHeader; // used only to check if the destined folder is the subfolder of the source folder
 };

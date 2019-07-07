@@ -29,20 +29,20 @@ namespace ui
 
     void CopyLayout::Start(u32 _value, bool _moveFlag)
     {
-        std::string action = "";
+        this->numberOfElements = _value;
+
         if (_moveFlag)
-            action = "Moving ";
+            this->action = "Moving ";
         else
-            action = "Copying ";
+            this->action = "Copying ";
 
-        std::string item = "";
-        if (_value > 1)
-            item = " items...";
+        if (this->numberOfElements > 1)
+            this->item = " items...";
         else
-            item = " item...";
+            this->item = " item...";
 
-        this->copyTextHeader->SetText(action + std::to_string(_value) + item);
-        this->copyProgressBar->SetMaxValue(_value);
+        this->copyTextHeader->SetText(this->action + std::to_string(this->copyProgressBar->GetProgress()) + " of " + std::to_string(this->numberOfElements) + this->item);
+        this->copyProgressBar->SetMaxValue(this->numberOfElements);
         this->copyProgressBar->ClearProgress();
         app->CallForRender();
     }
@@ -62,10 +62,12 @@ namespace ui
             _to.insert(0, "...");
         }
         */
+
         this->copyTextFrom->SetText("From: " + ((_from.length() > 58) ? "..." + _from.substr(_from.length() - 58) : _from));
         this->copyTextTo->SetText("To: " + ((_to.length() > 59) ? "..." + _to.substr(_to.length() - 59) : _to));
 
         this->copyProgressBar->IncrementProgress(1);
+        this->copyTextHeader->SetText(this->action + std::to_string((u32) this->copyProgressBar->GetProgress()) + " of " + std::to_string(this->numberOfElements) + this->item);
         app->CallForRender();
     }
 

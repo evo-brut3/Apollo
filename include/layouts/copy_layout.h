@@ -15,6 +15,10 @@ namespace ui
             void Reset();
 
         private:
+            std::string action = "";
+            std::string item = "";
+            u32 numberOfElements = 0;
+            u32 numberOfElementsDone = 0;
             pu::element::TextBlock *copyTextHeader;
             pu::element::TextBlock *copyTextFrom;
             pu::element::TextBlock *copyTextTo;

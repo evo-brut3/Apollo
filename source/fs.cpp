@@ -10,9 +10,6 @@ extern MainApplication *app;
 
 namespace fs
 {
-    std::vector<std::string> Directories;
-    std::vector<std::string> Files;
-
     inline bool Filter(char *_name) // is it necessary?
     {
         return (strcmp(_name, ".") && strcmp(_name, ".."));
@@ -66,10 +63,11 @@ namespace fs
         return (stat(_pathname.c_str(), &buff) == 0);
     }
 
-    void GetContents(const std::string &_path)
+    std::pair<std::vector<std::string>, std::vector<std::string>> GetContents(const std::string &_path)
     {
-        Files.clear();
-        Directories.clear();
+        std::vector<std::string> directories;
+        std::vector<std::string> files;
+
         DIR *dir;
         struct dirent *ent;
         dir = opendir(_path.c_str());
@@ -85,18 +83,24 @@ namespace fs
                     switch(IsDir(_path + R"(/)" + p))
                     {
                         case 0:
-                            Files.push_back(p);
+                            files.push_back(p);
                         break;
 
                         case 1:
-                            Directories.push_back(p);
+                            directories.push_back(p);
                         break;
                     }
                 }
             }
         }
         closedir(dir);
+        return std::make_pair(directories, files);
     }
+
+    #include <fcntl.h>   // open
+    #include <unistd.h>  // read, write, close
+    #include <cstdio>    // BUFSIZ
+    #include <ctime>
 
     void CopyFile(const std::string &_source, const std::string &_dest)
     {
@@ -120,25 +124,150 @@ namespace fs
     void CopyDir(const std::string &_source, const std::string &_dest)
     {
         MakeDir(_dest);
-        GetContents(_source);
+        auto [directories, files] = GetContents(_source);
 
-        if (!Directories.empty())
+        if (!directories.empty())
         {
-            for (auto &d : Directories)
+            for (auto &d : directories)
             {
+                app->GetCopyLayout()->Update(_source, _dest);
                 CopyDir(_source + R"(/)" + d, _dest + R"(/)" + d);
-                app->GetCopyLayout()->Update(_source + R"(/)" + d, _dest + R"(/)" + d);
             }
         }
 
-        GetContents(_source);
-        if (!Files.empty())
+        if (!files.empty())
         {
-            for (auto &f : Files)
+            for (auto &f : files)
             {
-                CopyFile(_source + R"(/)" + f, _dest + R"(/)" + f);
                 app->GetCopyLayout()->Update(_source + R"(/)" + f, _dest + R"(/)" + f);
+                CopyFile(_source + R"(/)" + f, _dest + R"(/)" + f);
             }
+        }
+    }
+
+    int CopyFileOverwrite(const std::string &_source, const std::string &_dest, int _ovstatus) // return: 0 - nothing, 1 - file was overwritten, 2 - overwrite all, 3 - don't overwrite anything
+    {
+        switch (_ovstatus)
+        {
+            case 0:
+                if (Exists(_dest))
+                {
+                    bool sourcetype = IsDir(_source);
+                    bool desttype = IsDir(_dest);
+                    if (sourcetype != desttype)
+                    {
+                        std::string type = (desttype == 0) ? "file" : "directory";
+                        app->CreateShowDialog("Cannot paste files!", "There is already a " + type + " with the same name: " + _dest, {"Ok"}, true);
+                        return 0;
+                    }
+                    else
+                    {
+                        int c = app->CreateShowDialog("Do you want to overwrite this file?", "File: " + _dest + " with this: " + _source, {"No", "Yes", "Overwrite all", "Don't overwrite anything"}, false);
+                        if (c == 1 || c == 2)
+                            CopyFile(_source, _dest);
+                        return c;
+                    }
+                }
+                else
+                {
+                    CopyFile(_source, _dest);
+                    return 0;
+                }
+            break;
+
+            case 1:
+                if (Exists(_dest))
+                {
+                    bool sourcetype = IsDir(_source);
+                    bool desttype = IsDir(_dest);
+                    if (sourcetype != desttype)
+                    {
+                        std::string type = (desttype == 0) ? "file" : "directory";
+                        app->CreateShowDialog("Cannot paste files!", "There is already a " + type + " with the same name: " + _dest, {"Ok"}, true);
+                        return 0;
+                    }
+                    else
+                    {
+                        CopyFile(_source, _dest);
+                        return 1;
+                    }
+                }
+                else
+                {
+                    CopyFile(_source, _dest);
+                    return 0;
+                }
+
+            break;
+
+            case 2:
+                if (!Exists(_dest))
+                    CopyFile(_source, _dest);
+                return 0;
+            break;
+        }
+    }
+
+    int CopyDirOverwrite(const std::string &_source, const std::string &_dest, int _ovstatus) // return: 0 - nothing, 1 - file was overwritten, 2 - overwrite all, 3 - don't overwrite anything
+    {
+        switch (_ovstatus)
+        {
+            case 0:
+                if (Exists(_dest))
+                {
+                    bool sourcetype = IsDir(_source);
+                    bool desttype = IsDir(_dest);
+                    if (sourcetype != desttype)
+                    {
+                        std::string type = (desttype == 0) ? "file" : "directory";
+                        app->CreateShowDialog("Cannot paste files!", "There is already a " + type + " with the same name: " + _dest, {"Ok"}, true);
+                        return 0;
+                    }
+                    else
+                    {
+                        int c = app->CreateShowDialog("Do you want to overwrite this directory?", "Directory: " + _dest + " with this: " + _source, {"No", "Yes", "Overwrite all", "Don't overwrite anything"}, false);
+                        if (c == 1 || c == 2)
+                            CopyDir(_source, _dest);
+                        return c;
+                    }
+                }
+                else
+                {
+                    CopyDir(_source, _dest);
+                    return 0;
+                }
+            break;
+
+            case 1:
+                if (Exists(_dest))
+                {
+                    bool sourcetype = IsDir(_source);
+                    bool desttype = IsDir(_dest);
+                    if (sourcetype != desttype)
+                    {
+                        std::string type = (desttype == 0) ? "file" : "directory";
+                        app->CreateShowDialog("Cannot paste files!", "There is already a " + type + " with the same name: " + _dest, {"Ok"}, true);
+                        return 0;
+                    }
+                    else
+                    {
+                        CopyDir(_source, _dest);
+                        return 1;
+                    }
+                }
+                else
+                {
+                    CopyDir(_source, _dest);
+                    return 0;
+                }
+
+            break;
+
+            case 2:
+                if (!Exists(_dest))
+                    CopyDir(_source, _dest);
+                return 0;
+            break;
         }
     }
 
