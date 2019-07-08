@@ -36,4 +36,5 @@ class Browser
         std::vector<File> currentFiles;
         std::vector<ClipboardNode> clipboard;
         inline void CopyFileOrDir(std::string _source, std::string _dest, bool _type);
+        inline void CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type);
 };

@@ -216,43 +216,7 @@ void Browser::PasteFiles()
             break;
 
             case 1: // check if there are already the same files/dirs
-                if (fs::Exists(currentPath + f.path))
-                {
-                    // check if there are already existing other type of files/dirs
-                    bool sourcetype = fs::IsDir(f.base + f.path);
-                    bool desttype = fs::IsDir(currentPath + f.path);
-                    std::string type = (desttype == 0) ? "file" : "directory";
-                    if (sourcetype != desttype)
-                    {
-                        app->CreateShowDialog("Cannot continue pasting files!", "There is already a " + type + " with the same name: " + currentPath + f.path, {"Ok"}, true);
-                        return;
-                    }
-                    else
-                    {
-                        if (overwritestatus == 1)
-                        {
-                            this->CopyFileOrDir(f.base + f.path, currentPath + f.path, f.directory);
-                            break;
-                        }
-                        else if (overwritestatus == 2)
-                            break;
-
-                        int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + currentPath + f.path + " with this: " + f.base + f.path, {"No", "Yes", "Overwrite all", "Avoid any overwriting"}, false);
-                        if (c == 1)
-                            this->CopyFileOrDir(f.base + f.path, currentPath + f.path, f.directory);
-                        if (c == 2)
-                        {
-                            this->CopyFileOrDir(f.base + f.path, currentPath + f.path, f.directory);
-                            overwritestatus = 1;
-                        }
-                        if (c == 3)
-                            overwritestatus = 2;
-                    }
-                }
-                else
-                {
-                    this->CopyFileOrDir(f.base + f.path, currentPath + f.path, f.directory);
-                }
+                this->CopyFileOrDirOverwrite(f.base + f.path, currentPath + f.path, f.directory);
             break;
         }
     }
@@ -314,4 +278,12 @@ inline void Browser::CopyFileOrDir(std::string _source, std::string _dest, bool 
         fs::CopyDir(_source, _dest);
     else
         fs::CopyFile(_source, _dest);
+}
+
+inline void CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type)
+{
+    if (_type)
+        fs::CopyDirOverwrite(_source, _dest);
+    else
+        fs::CopyFileOverwrite(_source, _dest);
 }
