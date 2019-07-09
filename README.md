@@ -19,7 +19,6 @@ Apollo's current features are:
 - **Graphical User Interface**: Minimalist design which is based on default hbmenu and official home menu esthetic.
 - **Selecting items**: A simple but mandatory feature.
 - **Copying files and directories**: Before doing so, application checks whether user is trying to overwrite currently existing files or directories and then asks about overwriting them.
-- **Moving files and directories**: Apollo checks for illegal actions as pasting directory into itself or trying to overwrite file with folder.
 - **Recursive directory deletion**: It allows for complete deletion of directories' content and obviously for file deletion.
 - **Renaming files and directories**: Speaks for itself.
 - **Sorting items**: Alphabetically or reversed.
@@ -34,6 +33,7 @@ Apollo's current features are:
 
 Planned features for the very next release:
 
+- Moving files and directories
 - Showing files and directories' information (size, permissions)
 - Sorting files by size and reversed
 - Remembering cursor's position while browsing between folders
