@@ -30,6 +30,7 @@ class MainApplication : public pu::Application
         void SortAction();
         void InfoAction();
         void HelpAction();
+        void ExitAction();
 
         // debug
         void SetDebugText(std::string _text);

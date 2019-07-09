@@ -45,8 +45,7 @@ MainApplication::MainApplication()
 
     this->SetOnInput([&](u64 Down, u64 Up, u64 Held, bool Touch)
     {
-        if (Down & KEY_MINUS)
-            this->Close();//WithFadeOut();
+        if (Down & KEY_MINUS)           this->ExitAction();
         if (Down & KEY_PLUS)            this->InfoAction();
         if (Down & KEY_B)               this->NavigateBackAction();
         if (Down & KEY_X)               this->RenameAction();
@@ -246,7 +245,7 @@ void MainApplication::InitAllLayouts()
 
     this->exitButton = new pu::element::MenuItem("");
     this->exitButton->SetIcon(GetRomFsResource("exit"));
-    this->exitButton->AddOnClick(std::bind(&MainApplication::RenameAction, this), KEY_A); // to do: exit action
+    this->exitButton->AddOnClick(std::bind(&MainApplication::ExitAction, this), KEY_A); // to do: exit action
     this->sidebarMenu->AddItem(exitButton);
     allMenuItems.push_back(this->exitButton);
 
@@ -381,4 +380,9 @@ void MainApplication::InfoAction()
 void MainApplication::HelpAction()
 {
     this->helpinfo = !this->helpinfo;
+}
+
+void MainApplication::ExitAction()
+{
+    this->Close();//WithFadeOut();
 }
