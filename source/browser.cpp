@@ -200,12 +200,10 @@ void Browser::PasteFiles()
         // Count all files in clipboard
         number += allFiles.size();
     }
-    int overwritestatus = 0; // 0 - ask about overwriting, 1 - overwrite everything, 2 - do not overwrite anything
 
     app->GetCopyLayout()->Reset();
     app->LoadLayout(app->GetCopyLayout());
     app->GetCopyLayout()->Start(number, this->moveFlag);
-    //app->CallForRender();
 
     for (auto &f : clipboard)
     {
@@ -236,6 +234,7 @@ void Browser::PasteFiles()
         this->clipboard.clear();
     }
     */
+    this->moveFlag = 0;
     this->clipboard.clear();
     this->Refresh();
     app->LoadLayout(app->GetMainLayout());
@@ -280,7 +279,7 @@ inline void Browser::CopyFileOrDir(std::string _source, std::string _dest, bool 
         fs::CopyFile(_source, _dest);
 }
 
-inline void CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type)
+inline void Browser::CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type)
 {
     if (_type)
         fs::CopyDirOverwrite(_source, _dest);

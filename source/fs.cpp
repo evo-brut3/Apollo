@@ -160,7 +160,7 @@ namespace fs
             }
             else
             {
-                int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + currentPath + f.path + " with this: " + f.base + f.path, {"No", "Yes"}, false);
+                int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + _dest + " with this: " + _source, {"No", "Yes"}, false);
                 if (c == 1)
                     CopyFile(_source, _dest);
             }
@@ -171,7 +171,7 @@ namespace fs
         }
     }
 
-    inline void _CopyDirOverwrite(const std::string &_source, const std::string &_dest)
+    static void _CopyDirOverwrite(const std::string &_source, const std::string &_dest)
     {
         MakeDir(_dest);
         auto [directories, files] = GetContents(_source);
@@ -210,7 +210,7 @@ namespace fs
             }
             else
             {
-                int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + currentPath + f.path + " with this: " + f.base + f.path, {"No", "Yes"}, false);
+                int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + _dest + " with this: " + _source, {"No", "Yes"}, false);
                 if (c == 1)
                     _CopyDirOverwrite(_source, _dest);
             }
