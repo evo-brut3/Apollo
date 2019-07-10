@@ -374,7 +374,23 @@ void MainApplication::SortAction()
 
 void MainApplication::InfoAction()
 {
-    this->SetDebugText(std::to_string(fs::IsDir(this->GetBrowser()->GetFilePathName())));
+    if (!this->GetMainLayout()->IsEmptyDirTextShown())
+    {
+        if (this->GetBrowser()->GetNumberOfSelected() > 1)
+        {
+
+        }
+        else
+        {
+            bool t = this->GetBrowser()->GetFileType();
+            std::string name    = "Name: " + this->GetBrowser()->GetFileName();
+            std::string path    = "\nPath: " + this->GetBrowser()->GetFilePath();
+            std::string type    = (t == 0) ? "\nType: File" : "\nType: Directory";
+            std::string size    = "\nSize: " + std::to_string(this->GetBrowser()->GetFileSize());
+            std::string perm    = "\nPermissions: " + this->GetBrowser()->GetFilePermissions();
+            this->CreateShowDialog("Properties", name + path + type + size + perm, {"Cancel"}, true);
+        }
+    }
 }
 
 void MainApplication::HelpAction()

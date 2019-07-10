@@ -4,11 +4,13 @@
 namespace fs
 {
     inline bool Filter(char *_name);
-    inline void MakeDir(const std::string &_path);
+    inline void MakeDir(const std::string &_pathname);
 
-    std::vector<File> OpenDir(const std::string &_path);
-    bool IsDir(const std::string &_path);
+    std::vector<File> OpenDir(const std::string &_pathname);
+    bool IsDir(const std::string &_pathname);
     bool Exists(const std::string &_pathname);
+    u32 GetSize(const std::string &_pathname);
+    std::string GetPermissions(const std::string &_pathname);
     std::pair<std::vector<std::string>, std::vector<std::string>> GetContents(const std::string &_path);
     void CopyFile(const std::string &_source, const std::string &_dest);
     void CopyDir(const std::string &_source, const std::string &_dest);

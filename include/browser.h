@@ -27,7 +27,11 @@ class Browser
         std::string GetFileName();
         std::string GetFilePath();
         std::string GetFilePathName();
+        std::string GetFilePermissions();
+        bool GetFileType();
+        u32 GetFileSize();
     private:
+        File firstSelected;
         u32 numberOfSelected = 0;
         bool moveFlag = 0; // 0 - copy, 1 - cut
         bool emptyDir = false;

@@ -72,6 +72,18 @@ void Browser::SelectFile()
             numberOfSelected++;
         break;
     }
+
+    if (this->GetNumberOfSelected() == 1)
+    {
+        for (auto &f : currentFiles)
+        {
+            if (f.selected == true)
+            {
+                this->firstSelected = f;
+                break;
+            }
+        }
+    }
 }
 
 void Browser::RenameFile()
@@ -88,7 +100,7 @@ void Browser::RemoveFiles()
 {
     app->LoadLayout(app->GetDeleteLayout());
 
-    if (numberOfSelected > 0)
+    if (this->GetNumberOfSelected() > 1)
     {
         u32 number = 1;
         for (auto &f : currentFiles)
@@ -128,7 +140,7 @@ void Browser::CopyFiles()
 {
     clipboard.clear();
 
-    if (numberOfSelected > 0)
+    if (this->GetNumberOfSelected() > 1)
     {
         for (auto &f : currentFiles)
         {
@@ -258,17 +270,50 @@ u32 Browser::GetClipboardSize()
 
 std::string Browser::GetFileName()
 {
-    return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
+    if (this->GetNumberOfSelected() == 0)
+        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
+    else if (this->GetNumberOfSelected() == 1)
+        return firstSelected.name;
 }
 
 std::string Browser::GetFilePath()
 {
-    return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).path;
+    if (this->GetNumberOfSelected() == 0)
+        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).path;
+    else if (this->GetNumberOfSelected() == 1)
+        return firstSelected.path;
 }
 
 std::string Browser::GetFilePathName()
 {
-    return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname;
+    if (this->GetNumberOfSelected() == 0)
+        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname;
+    else if (this->GetNumberOfSelected() == 1)
+        return firstSelected.pathname;
+}
+
+std::string Browser::GetFilePermissions()
+{
+    if (this->GetNumberOfSelected() == 0)
+        return fs::GetPermissions(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
+    else if (this->GetNumberOfSelected() == 1)
+        return fs::GetPermissions(firstSelected.pathname);
+}
+
+bool Browser::GetFileType()
+{
+    if (this->GetNumberOfSelected() == 0)
+        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).type;
+    else if (this->GetNumberOfSelected() == 1)
+        return firstSelected.type;
+}
+
+u32 Browser::GetFileSize()
+{
+    if (this->GetNumberOfSelected() == 0)
+        return fs::GetSize(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
+    else if (this->GetNumberOfSelected() == 1)
+        return fs::GetSize(firstSelected.pathname);
 }
 
 inline void Browser::CopyFileOrDir(std::string _source, std::string _dest, bool _type)

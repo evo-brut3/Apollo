@@ -15,52 +15,81 @@ namespace fs
         return (strcmp(_name, ".") && strcmp(_name, ".."));
     }
 
-    inline void MakeDir(const std::string &_path)
+    inline void MakeDir(const std::string &_pathname)
     {
-        mkdir(_path.c_str(), 0777);
+        mkdir(_pathname.c_str(), 0777);
     }
 
-    std::vector<File> OpenDir(const std::string &_path)
+    std::vector<File> OpenDir(const std::string &_pathname)
     {
         DIR* dir;
         struct dirent* ent;
         std::vector<File> files;
 
-        dir = opendir(_path.c_str());
+        dir = opendir(_pathname.c_str());
         if (dir!=NULL)
         {
             while ((ent = readdir(dir)))
             {
                 File _f
                 (
-                    _path + R"(/)" + ent->d_name,               // pathname
-                    ent->d_name,                                // name
-                    _path,                                      // path
-                    IsDir(_path + R"(/)" + ent->d_name)         // type
+                    _pathname + R"(/)" + ent->d_name,               // pathname
+                    ent->d_name,                                    // name
+                    _pathname,                                      // path
+                    IsDir(_pathname + R"(/)" + ent->d_name)         // type
                 );
 
                 files.push_back(File(_f));
             }
-            app->SetDebugText("Loaded: " + _path);
+            app->SetDebugText("Loaded: " + _pathname);
         }
         else
-            app->SetDebugText("Error loading: " + _path);
+            app->SetDebugText("Error loading: " + _pathname);
 
         closedir(dir);
         return files;
     }
 
-    bool IsDir(const std::string &_path)
+    bool IsDir(const std::string &_pathname)
     {
         struct stat buf;
-        stat((char *)_path.c_str(), &buf);
-        return S_ISDIR(buf.st_mode);
+        stat(_pathname.c_str(), &buf);
+        return (S_ISDIR(buf.st_mode) != 0 ? true : false);
     }
 
     bool Exists(const std::string &_pathname)
     {
         struct stat buff;
         return (stat(_pathname.c_str(), &buff) == 0);
+    }
+
+    u32 GetSize(const std::string &_pathname)
+    {
+        struct stat buff;
+        return (stat(_pathname.c_str(), &buff) == 0 ? buff.st_size : -1);
+    }
+
+    std::string GetPermissions(const std::string &_pathname)
+    {
+        struct stat buff;
+        char perm[10];
+        if (stat(_pathname.c_str(), &buff) == 0)
+        {
+            mode_t p = buff.st_mode;
+            perm[0] = (p & S_IRUSR) ? 'r' : '-';
+            perm[1] = (p & S_IWUSR) ? 'w' : '-';
+            perm[2] = (p & S_IXUSR) ? 'x' : '-';
+            perm[3] = (p & S_IRGRP) ? 'r' : '-';
+            perm[4] = (p & S_IWGRP) ? 'w' : '-';
+            perm[5] = (p & S_IXGRP) ? 'x' : '-';
+            perm[6] = (p & S_IROTH) ? 'r' : '-';
+            perm[7] = (p & S_IWOTH) ? 'w' : '-';
+            perm[8] = (p & S_IXOTH) ? 'x' : '-';
+            perm[9] = '\0';
+            return perm;
+        }
+        else
+            return "error";
     }
 
     std::pair<std::vector<std::string>, std::vector<std::string>> GetContents(const std::string &_path)
