@@ -122,7 +122,7 @@ void Browser::RemoveFiles()
     }
     else
     {
-        app->GetDeleteLayout()->Start(fs::CountFilesRecursive(this->GetFilePathName()));
+        app->GetDeleteLayout()->Start(fs::CountFilesRecursive(this->GetFilePathName()) + 1);
         app->CallForRender();
 
         std::string pathname = this->GetFilePathName();
@@ -182,7 +182,7 @@ void Browser::PasteFiles()
     if (clipboard.at(0).base == currentPath)
         return;
 
-    u32 number = 1;
+    u32 number = 0;
     for (auto &f : clipboard)
     {
         // Check if the destined folder is the subfolder of the source folder
@@ -272,7 +272,7 @@ std::string Browser::GetFileName()
 {
     if (this->GetNumberOfSelected() == 0)
         return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
-    else if (this->GetNumberOfSelected() == 1)
+    else
         return firstSelected.name;
 }
 
@@ -280,7 +280,7 @@ std::string Browser::GetFilePath()
 {
     if (this->GetNumberOfSelected() == 0)
         return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).path;
-    else if (this->GetNumberOfSelected() == 1)
+    else
         return firstSelected.path;
 }
 
@@ -288,7 +288,7 @@ std::string Browser::GetFilePathName()
 {
     if (this->GetNumberOfSelected() == 0)
         return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname;
-    else if (this->GetNumberOfSelected() == 1)
+    else
         return firstSelected.pathname;
 }
 
@@ -296,24 +296,54 @@ std::string Browser::GetFilePermissions()
 {
     if (this->GetNumberOfSelected() == 0)
         return fs::GetPermissions(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
-    else if (this->GetNumberOfSelected() == 1)
+    else
         return fs::GetPermissions(firstSelected.pathname);
+}
+
+u32 Browser::GetFilesSize()
+{
+    if (this->GetNumberOfSelected() == 0)
+    {
+        if (this->GetFileType() == 1)
+            return fs::GetDirSizeRecursive(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
+        else
+            return fs::GetSize(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
+    }
+    else
+    {
+        u32 allsize = 0;
+        for (auto &f : currentFiles)
+        {
+            if (f.selected == true)
+                if (f.type == 1)
+                    allsize += fs::GetDirSizeRecursive(f.pathname);
+                else
+                    allsize += fs::GetSize(f.pathname);
+        }
+        return allsize;
+    }
 }
 
 bool Browser::GetFileType()
 {
     if (this->GetNumberOfSelected() == 0)
         return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).type;
-    else if (this->GetNumberOfSelected() == 1)
+    else
         return firstSelected.type;
 }
 
-u32 Browser::GetFileSize()
+std::pair<u32, u32> Browser::CountMultipleFilesType()
 {
-    if (this->GetNumberOfSelected() == 0)
-        return fs::GetSize(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
-    else if (this->GetNumberOfSelected() == 1)
-        return fs::GetSize(firstSelected.pathname);
+    u32 files = 0;
+    u32 dirs = 0;
+    for (auto &f : currentFiles)
+    {
+        if (f.type == 0)
+            dirs++;
+        else
+            files++;
+    }
+    return std::make_pair(files, dirs);
 }
 
 inline void Browser::CopyFileOrDir(std::string _source, std::string _dest, bool _type)

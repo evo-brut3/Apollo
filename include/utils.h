@@ -6,6 +6,8 @@ std::string GetRomFsFileExt(bool _ext);
 std::string GetRomFsResource(std::string _name, std::string _dir = "Common");
 bool CompareNames(File _f, File _g);
 bool CompareNamesReversed(File _f, File _g);
+std::string FormatSize(u32 _size);
+std::string FormatNumber(u32 _number);
 
 namespace sys
 {

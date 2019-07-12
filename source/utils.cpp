@@ -9,16 +9,13 @@ void SortFiles(std::vector<File> &_files, SortType _sorttype)
 {
     switch (_sorttype)
     {
+        default:
         case SortType::Alphabetical:
             std::sort(_files.begin(), _files.end(), CompareNames);
         break;
 
         case SortType::Alphabetical_Reversed:
             std::sort(_files.rbegin(), _files.rend(), CompareNamesReversed);
-        break;
-
-        default:
-            std::sort(_files.begin(), _files.end(), CompareNames);
         break;
     }
 }
@@ -27,16 +24,13 @@ std::string GetRomFsFileExt(bool _ext)
 {
     switch (_ext)
     {
+        default:
         case 0:
             return "file";
         break;
 
         case 1:
             return "dir";
-        break;
-
-        default:
-            return "file";
         break;
     }
 }
@@ -53,6 +47,7 @@ bool CompareNames(File _f, File _g)
 
     switch (_f.type - _g.type)
     {
+        default:
         case 0:
             return (_f.name < _g.name);
         break;
@@ -74,6 +69,7 @@ bool CompareNamesReversed(File _f, File _g)
 
     switch (_f.type - _g.type)
     {
+        default:
         case 0:
             return (_f.name < _g.name);
         break;
@@ -86,6 +82,36 @@ bool CompareNamesReversed(File _f, File _g)
             return false;
         break;
     }
+}
+
+std::string FormatSize(u32 _size)
+{
+    const char *sizes[6] = {"B", "KB", "MB", "GB", "TB", "PB"};
+    char sizeout[32] = {0};
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (_size/pow(1024.00, i) > 1023.5)
+            continue;
+        else
+        {
+            std::sprintf(sizeout, "%.2f %s", _size/pow(1024.00, i), sizes[i]);
+            break;
+        }
+    }
+    return sizeout;
+}
+
+std::string FormatNumber(u32 _number)
+{
+    std::string num = std::to_string(_number);
+    int i = num.length() - 3;
+    while (i > 0)
+    {
+        num.insert(i, " ");
+        i-=3;
+    }
+    return num;
 }
 
 namespace sys

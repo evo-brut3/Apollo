@@ -52,9 +52,9 @@ namespace fs
 
     bool IsDir(const std::string &_pathname)
     {
-        struct stat buf;
-        stat(_pathname.c_str(), &buf);
-        return (S_ISDIR(buf.st_mode) != 0 ? true : false);
+        struct stat buff;
+        stat(_pathname.c_str(), &buff);
+        return (S_ISDIR(buff.st_mode) != 0 ? true : false);
     }
 
     bool Exists(const std::string &_pathname)
@@ -66,7 +66,10 @@ namespace fs
     u32 GetSize(const std::string &_pathname)
     {
         struct stat buff;
-        return (stat(_pathname.c_str(), &buff) == 0 ? buff.st_size : -1);
+        if (S_ISDIR(buff.st_mode) == false)
+            return (stat(_pathname.c_str(), &buff) == 0 ? buff.st_size : 0);
+        else
+            return GetDirSizeRecursive(_pathname);
     }
 
     std::string GetPermissions(const std::string &_pathname)
@@ -125,11 +128,6 @@ namespace fs
         closedir(dir);
         return std::make_pair(directories, files);
     }
-
-    #include <fcntl.h>   // open
-    #include <unistd.h>  // read, write, close
-    #include <cstdio>    // BUFSIZ
-    #include <ctime>
 
     void CopyFile(const std::string &_source, const std::string &_dest)
     {
@@ -331,24 +329,60 @@ namespace fs
         closedir(dir);
     }
 
-    u32 CountFilesRecursive(const std::string &_pathname, u32 _number)
+    u32 CountFilesRecursive(const std::string &_pathname)
     {
         DIR *dir = opendir((_pathname).c_str());
         struct dirent *ent;
+        u32 number = 0;
 
         if (!dir)
             return 0;
 
         while ((ent = readdir(dir)) != NULL)
         {
-            if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+            if (Filter(ent->d_name))
             {
-                _number++;
-                _number += CountFilesRecursive(_pathname + R"(\)" + ent->d_name);
+                std::string p = _pathname + R"(\)" + ent->d_name;
+                if (IsDir(p))
+                {
+                    number++;
+                    number += CountFilesRecursive(_pathname + R"(\)" + ent->d_name);
+                }
+                else
+                {
+                    number++;
+                }
             }
         }
         closedir(dir);
 
-        return _number;
+        return number;
+    }
+
+    u32 GetDirSizeRecursive(const std::string &_pathname)
+    {
+        DIR *dir = opendir((_pathname).c_str());
+        struct dirent *ent;
+        u32 size = 0;
+
+        if (!dir)
+            return 0;
+
+        while ((ent = readdir(dir)) != NULL)
+        {
+            if (Filter(ent->d_name))
+            {
+                std::string p = _pathname + R"(\)" + ent->d_name;
+                struct stat buff;
+                u32 s = (stat(p.c_str(), &buff) == 0 ? buff.st_size : 0);
+                if (S_ISDIR(buff.st_mode) == true)
+                    size += GetDirSizeRecursive(p);
+                else
+                    size += s;
+            }
+        }
+        closedir(dir);
+
+        return size;
     }
 }
