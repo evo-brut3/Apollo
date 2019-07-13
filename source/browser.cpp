@@ -105,9 +105,13 @@ void Browser::RemoveFiles()
         u32 number = 0;
         for (auto &f : currentFiles)
         {
-            auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(f.pathname);
-            number += nodirs;
-            number += nofiles;
+            if (f.selected == true)
+            {
+                auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(f.pathname);
+                number += nodirs;
+                nofiles += (f.type == 0) ? 1 : 0;
+                number += nofiles;
+            }
         }
 
         app->GetDeleteLayout()->Start(number);
@@ -127,6 +131,7 @@ void Browser::RemoveFiles()
     else
     {
         auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(this->GetFilePathName());
+        nofiles += (this->GetFileType() == 0) ? 1 : 0;
         app->GetDeleteLayout()->Start(nodirs + nofiles);
         app->CallForRender();
 
@@ -217,6 +222,7 @@ void Browser::PasteFiles()
         // Count files
         auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(f.base + f.path);
         number += nodirs;
+        nofiles += (f.directory == false) ? 1 : 0;
         number += nofiles;
     }
 
