@@ -41,7 +41,7 @@ namespace ui
         else
             this->item = " item...";
 
-        this->copyTextHeader->SetText(this->action + std::to_string(this->copyProgressBar->GetProgress()) + " of " + std::to_string(this->numberOfElements) + this->item);
+        this->copyTextHeader->SetText(this->action + std::to_string((u32) this->copyProgressBar->GetProgress()) + " of " + std::to_string(this->numberOfElements) + this->item);
         this->copyProgressBar->SetMaxValue(this->numberOfElements);
         this->copyProgressBar->ClearProgress();
         app->CallForRender();

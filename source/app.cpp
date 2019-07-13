@@ -376,27 +376,28 @@ void MainApplication::InfoAction()
 {
     if (!this->GetMainLayout()->IsEmptyDirTextShown())
     {
-        this->SetDebugText(std::to_string(this->GetBrowser()->GetNumberOfSelected()));
         if (this->GetBrowser()->GetNumberOfSelected() > 1)
         {
             u32 s  = this->GetBrowser()->GetFilesSize();
-            auto [nofiles, nodirs] = this->GetBrowser()->CountMultipleFilesType();
+            auto [nodirs, nofiles] = this->GetBrowser()->CountMultipleFilesType();
             std::string name = "Multiple files\n";
             std::string path = "\nPath: " + this->GetBrowser()->GetFilePath();
-            std::string type = "\nContains: " + std::to_string(nofiles) + " Files, " + std::to_string(nodirs) + " Folders";
+            std::string cont = "\nContains: " + std::to_string(nofiles) + " Files, " + std::to_string(nodirs) + " Folders";
             std::string size = "\nSize: " + FormatSize(s) + " (" + FormatNumber(s) + " Bytes)";
-            this->CreateShowDialog("Properties", name + path + type + size, {"Cancel"}, true);
+            this->CreateShowDialog("Properties", name + path + cont + size, {"Cancel"}, true);
         }
         else
         {
             bool t = this->GetBrowser()->GetFileType();
             u32 s  = this->GetBrowser()->GetFilesSize();
+            auto [nodirs, nofiles] = this->GetBrowser()->CountMultipleFilesType();
             std::string name = "Name: " + this->GetBrowser()->GetFileName();
             std::string path = "\nPath: " + this->GetBrowser()->GetFilePath();
             std::string type = (t == 0) ? "\nType: File" : "\nType: Directory";
+            std::string cont = (t == 0) ? "" : "\nContains: " + std::to_string(nofiles) + " Files, " + std::to_string(nodirs) + " Folders";
             std::string size = "\nSize: " + FormatSize(s) + " (" + FormatNumber(s) + " Bytes)";
             std::string perm = "\nPermissions: " + this->GetBrowser()->GetFilePermissions();
-            this->CreateShowDialog("Properties", name + path + type + size + perm, {"Cancel"}, true);
+            this->CreateShowDialog("Properties", name + path + type + cont + size + perm, {"Cancel"}, true);
         }
     }
 }

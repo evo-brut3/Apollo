@@ -329,34 +329,34 @@ namespace fs
         closedir(dir);
     }
 
-    u32 CountFilesRecursive(const std::string &_pathname)
+    std::pair<u32, u32> CountFilesAndDirsRecursive(const std::string &_pathname)
     {
         DIR *dir = opendir((_pathname).c_str());
         struct dirent *ent;
-        u32 number = 0;
+        u32 dirs = 1;
+        u32 files = 0;
 
         if (!dir)
-            return 0;
+            return std::make_pair(0, 0);
 
         while ((ent = readdir(dir)) != NULL)
         {
             if (Filter(ent->d_name))
             {
-                std::string p = _pathname + R"(\)" + ent->d_name;
+                std::string p = _pathname + R"(/)" + ent->d_name;
                 if (IsDir(p))
                 {
-                    number++;
-                    number += CountFilesRecursive(_pathname + R"(\)" + ent->d_name);
+                    auto [nodirs, nofiles] = CountFilesAndDirsRecursive(_pathname + R"(/)" + ent->d_name);
+                    dirs += nodirs;
+                    files += nofiles;
                 }
                 else
-                {
-                    number++;
-                }
+                    files++;
             }
         }
         closedir(dir);
 
-        return number;
+        return std::make_pair(dirs, files);
     }
 
     u32 GetDirSizeRecursive(const std::string &_pathname)
@@ -372,7 +372,7 @@ namespace fs
         {
             if (Filter(ent->d_name))
             {
-                std::string p = _pathname + R"(\)" + ent->d_name;
+                std::string p = _pathname + R"(/)" + ent->d_name;
                 struct stat buff;
                 u32 s = (stat(p.c_str(), &buff) == 0 ? buff.st_size : 0);
                 if (S_ISDIR(buff.st_mode) == true)
