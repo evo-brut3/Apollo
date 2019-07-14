@@ -38,6 +38,7 @@ namespace fs
                     _pathname,                                      // path
                     IsDir(_pathname + R"(/)" + ent->d_name)         // type
                 );
+                _f.size = (_f.type == 0) ? GetSize(_pathname + R"(/)" + ent->d_name) : 0;
 
                 files.push_back(File(_f));
             }

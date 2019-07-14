@@ -6,3 +6,5 @@
 - added setting font size in constructor of button
 - edited method Menu::SetSelectedIndex
 - added Menu::SetScrollIndex
+- added SecondName to MenuItem
+- added SetNameFont and SetSecondNameFont

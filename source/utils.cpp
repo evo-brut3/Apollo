@@ -40,6 +40,11 @@ std::string GetRomFsResource(std::string _name, std::string _dir)
     return (R"(romfs:/)" + _dir + "/" + _name + R"(.png)");
 }
 
+std::string GetRomFsFont(std::string _fullfontname)
+{
+    return (R"(romfs:/Fonts/)" + _fullfontname);
+}
+
 bool CompareNames(File _f, File _g)
 {
     std::transform(_f.name.begin(), _f.name.end(), _f.name.begin(), ::tolower);
@@ -86,7 +91,7 @@ bool CompareNamesReversed(File _f, File _g)
 
 std::string FormatSize(u32 _size)
 {
-    const char *sizes[6] = {"B", "KB", "MB", "GB", "TB", "PB"};
+    const char *sizes[6] = {" B", "KB", "MB", "GB", "TB", "PB"};
     char sizeout[32] = {0};
 
     for (int i = 0; i < 5; i++)
@@ -112,6 +117,40 @@ std::string FormatNumber(u32 _number)
         i-=3;
     }
     return num;
+}
+
+std::string ShortenText(std::string _text, u32 _maxchar, std::string _dots, bool _dotspos) // _dotspos: 0 - left, 1 - right
+{
+    if (_text.length() > _maxchar)
+    {
+        if (_dotspos == 0)
+        {
+            _text.erase(_text.begin(), _text.end()-_maxchar);
+            _text.insert(0, _dots);
+        }
+        else
+        {
+            _text.erase(_text.begin()+_maxchar, _text.end());
+            _text.append(_dots);
+        }
+    }
+
+    return _text;
+}
+
+std::string WrapText(std::string _text, u32 _maxchar)
+{
+    if (_text.length() > _maxchar)
+    {
+        for (int i = 0; i < _text.length(); i++)
+        {
+            if (i % _maxchar == 0)
+            {
+                _text.insert(i, "\n");
+            }
+        }
+    }
+    return _text;
 }
 
 namespace sys

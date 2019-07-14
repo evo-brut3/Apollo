@@ -49,7 +49,6 @@ void Browser::NavigateBack()
     if (n > 1)
     {
         this->currentPath.erase(this->currentPath.begin()+d, this->currentPath.end());
-
         this->LoadFiles(this->currentPath);
     }
 }

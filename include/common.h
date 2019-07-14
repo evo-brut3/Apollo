@@ -11,14 +11,16 @@ struct File
     std::string name;
     std::string path;
     bool type; // 0 - file, 1 - dir
+    u32 size;
     std::string extension;
     bool selected = false;
 
-    File(std::string _pn = "", std::string _n = "", std::string _p = "", bool _t = 0, std::string _x = "")
+    File(std::string _pn = "", std::string _n = "", std::string _p = "", bool _t = 0, u32 _s = 0, std::string _x = "")
     : pathname(_pn),
       name(_n),
       path(_p),
       type(_t),
+      size(_s),
       extension(_x)
     {
     }

@@ -1,6 +1,7 @@
 #include <string>
 #include "layouts/delete_layout.h"
 #include "app.h"
+#include "utils.h"
 
 extern MainApplication *app;
 
@@ -37,14 +38,7 @@ namespace ui
 
     void DeleteLayout::Update(std::string _current)
     {
-        if (_current.length() > 56) // 58 characters
-        {
-            _current.erase(_current.begin(), _current.end()-58);
-            _current.insert(0, "...");
-        }
-
-        this->deleteCurrent->SetText("Item: " + _current);
-
+        this->deleteCurrent->SetText("Item: " + ShortenText(_current, 56, "..."));
         this->deleteProgressBar->IncrementProgress(1);
     }
 }

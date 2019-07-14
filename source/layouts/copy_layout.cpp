@@ -1,6 +1,7 @@
 #include <string>
 #include "layouts/copy_layout.h"
 #include "app.h"
+#include "utils.h"
 
 extern MainApplication *app;
 
@@ -49,22 +50,8 @@ namespace ui
 
     void CopyLayout::Update(const std::string &_from, const std::string &_to)
     {
-        /*
-        if (_from.length() > 58)
-        {
-            _from.erase(_from.begin(), _from.end()-58);
-            _from.insert(0, "...");
-        }
-
-        if (_to.length() > 59)
-        {
-            _to.erase(_to.begin(), _to.end()-59);
-            _to.insert(0, "...");
-        }
-        */
-
-        this->copyTextFrom->SetText("From: " + ((_from.length() > 58) ? "..." + _from.substr(_from.length() - 58) : _from));
-        this->copyTextTo->SetText("To: " + ((_to.length() > 59) ? "..." + _to.substr(_to.length() - 59) : _to));
+        this->copyTextFrom->SetText("From: " + ShortenText(_from, 58, "..."));
+        this->copyTextTo->SetText("To: " + ShortenText(_to, 59, "..."));
 
         this->copyProgressBar->IncrementProgress(1);
         this->copyTextHeader->SetText(this->action + std::to_string((u32) this->copyProgressBar->GetProgress()) + " of " + std::to_string(this->numberOfElements) + this->item);
@@ -80,13 +67,7 @@ namespace ui
 
     void CopyLayout::FinishUpdate(std::string _item)
     {
-        if (_item.length() > 54)
-        {
-            _item.erase(_item.begin(), _item.end()-54);
-            _item.insert(0, "...");
-        }
-
-        this->copyTextFrom->SetText("Deleting: " + _item);
+        this->copyTextFrom->SetText("Deleting: " + ShortenText(_item, 54, "..."));
         app->CallForRender();
     }
 

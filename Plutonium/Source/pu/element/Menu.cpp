@@ -2,12 +2,16 @@
 
 namespace pu::element
 {
-    MenuItem::MenuItem(std::string Name)
+    MenuItem::MenuItem(std::string Name, std::string SecondName)
     {
         this->font = render::LoadSharedFont(render::SharedFont::Standard, 25);
+		this->secondfont = render::LoadSharedFont(render::SharedFont::Standard, 20);
         this->clr = { 10, 10, 10, 255 };
+		this->snclr = { 10, 10, 10, 255 };
         this->name = Name;
+		this->secondname = SecondName;
         this->ntex = render::RenderText(this->font, Name, this->clr);
+		this->sntex = render::RenderText(this->secondfont, SecondName, this->snclr);
         this->hasicon = false;
     }
 
@@ -18,10 +22,20 @@ namespace pu::element
             render::DeleteFont(this->font);
             this->font = NULL;
         }
+		if(this->secondfont != NULL)
+        {
+            render::DeleteFont(this->secondfont);
+            this->secondfont = NULL;
+        }
         if(this->ntex != NULL)
         {
             render::DeleteTexture(this->ntex);
             this->ntex = NULL;
+        }
+		if(this->sntex != NULL)
+        {
+            render::DeleteTexture(this->sntex);
+            this->sntex = NULL;
         }
         if(this->hasicon && (this->itex != NULL))
         {
@@ -34,6 +48,11 @@ namespace pu::element
     {
         return this->name;
     }
+	
+	std::string MenuItem::GetSecondName()
+    {
+        return this->secondname;
+    }
 
     void MenuItem::SetName(std::string Name)
     {
@@ -42,10 +61,45 @@ namespace pu::element
         this->ntex = render::RenderText(this->font, Name, this->clr);
     }
 
+	void MenuItem::SetSecondName(std::string SecondName)
+	{
+		this->secondname = SecondName;
+		render::DeleteTexture(this->sntex);
+		this->sntex = render::RenderText(this->secondfont, SecondName, this->clr);
+	}
+	
+	void MenuItem::SetSecondNameColor(draw::Color Color)
+	{
+		this->snclr = Color;
+        render::DeleteTexture(this->sntex);
+        this->sntex = render::RenderText(this->secondfont, this->secondname, Color);
+	}
+	
+	void MenuItem::SetNameFont(std::string Font, u32 Size)
+	{
+		render::DeleteFont(this->font);
+		this->font = render::LoadFont(Font, Size);;
+		render::DeleteTexture(this->ntex);
+		this->ntex = render::RenderText(this->font, this->name, this->clr);
+		
+	}
+	void MenuItem::SetSecondNameFont(std::string Font, u32 Size)
+	{
+		render::DeleteFont(this->secondfont);
+		this->secondfont = render::LoadFont(Font, Size);;
+		render::DeleteTexture(this->sntex);
+		this->sntex = render::RenderText(this->secondfont, this->secondname, this->snclr);
+	}
+	
     draw::Color MenuItem::GetColor()
     {
         return this->clr;
     }
+	
+	draw::Color MenuItem::GetSecondNameColor()
+	{
+		return this->snclr;
+	}
 
     void MenuItem::SetColor(draw::Color Color)
     {
@@ -103,9 +157,19 @@ namespace pu::element
         return this->font;
     }
 
+	render::NativeFont MenuItem::GetSecondFont()
+	{
+		return this->secondfont;
+	}
+	
     render::NativeTexture MenuItem::GetNameTexture()
     {
         return this->ntex;
+    }
+	
+	render::NativeTexture MenuItem::GetSecondNameTexture()
+    {
+        return this->sntex;
     }
 
     render::NativeTexture MenuItem::GetIconTexture()
@@ -141,6 +205,7 @@ namespace pu::element
 		this->iconOnly = false;
 		this->scbpos = 0;
 		this->scbwidth = 20;
+		this->snposper = 0.5;
     }
 
     Menu::~Menu()
@@ -335,6 +400,11 @@ namespace pu::element
 		this->scbwidth = scbwidth;
 	}
 	
+	void Menu::SetSecondNamePositionPercent(double Percent)
+	{
+		this->snposper = Percent;
+	}
+	
     void Menu::OnRender(render::Renderer *Drawer)
     {
         u32 rdx = this->GetProcessedX();
@@ -384,6 +454,11 @@ namespace pu::element
                 u32 xh = render::GetTextHeight(itm->GetFont(), itm->GetName());
                 u32 tx = (cx + 25);
                 u32 ty = ((ch - xh) / 2) + cy;
+				u32 sxh = render::GetTextHeight(itm->GetFont(), "0");
+				u32 sxh2 = render::GetTextHeight(itm->GetSecondFont(), "0");
+				u32 sxh3 = (sxh-sxh2 > 0) ? sxh-sxh2 : sxh2-sxh;
+				u32 stx = (double)((cw * this->snposper) + cx + 25);
+				u32 sty = ((ch - sxh) / 2) + cy + sxh3;
                 if(itm->HasIcon())
                 {
 					if (this->IsIconOnly())
@@ -404,6 +479,7 @@ namespace pu::element
 					}
                 }
                 Drawer->RenderTexture(itm->GetNameTexture(), tx, ty);
+				Drawer->RenderTexture(itm->GetSecondNameTexture(), stx, sty);
                 cy += ch;
             }
             if(this->ishow < this->itms.size())

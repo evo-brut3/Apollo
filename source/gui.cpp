@@ -33,7 +33,7 @@ MainLayout::MainLayout()
     this->Add(locationIcon);
 
     // files menu
-    this->filesMenu = new pu::element::Menu(144, 87+35, (1280-164-30), {240, 240, 240, 255}, 35, 15);
+    this->filesMenu = new pu::element::Menu(144, 87+35, (1280-164), {240, 240, 240, 255}, 35, 15);
     this->filesMenu->SetOnFocusColor({254, 254, 254, 255});
     this->filesMenu->SetScrollbarColor({198, 198, 198, 255});
     this->filesMenu->SetDrawShadow(false);
@@ -63,7 +63,17 @@ void MainLayout::LoadItems(std::vector<File> &files)
         // Draw every element of this vector
         for (auto &element : files)
         {
-            pu::element::MenuItem *item = new pu::element::MenuItem(element.name);
+            // Check the size of the element and align it if it is a file
+            char itemsize[11] = "";
+            if (element.type == 0)  std::sprintf(itemsize, "%10s", (FormatSize(element.size).c_str()));
+
+            // Set the name of the element and align size to it
+            std::string elementname = ShortenText(element.name, 54, "...", 1);
+            pu::element::MenuItem *item = new pu::element::MenuItem(elementname, itemsize);
+            item->SetSecondNameFont(GetRomFsFont("RobotoMono-Regular.ttf"), 20);
+            this->filesMenu->SetSecondNamePositionPercent(0.83);
+            item->SetSecondNameColor({65, 65, 65, 255});
+
             // to do: check whether directory is empty/file
             item->SetIcon(GetRomFsResource(GetRomFsFileExt(element.type)));
             item->AddOnClick(std::bind(&MainLayout::OpenAction, this, element.pathname), KEY_A);
@@ -109,13 +119,7 @@ void MainLayout::SetMenuElementIndexColor(pu::draw::Color _color)
 
 void MainLayout::SetLocationBarText(std::string _text)
 {
-    if (_text.length() > 62) // 62 characters
-    {
-        _text.erase(_text.begin(), _text.end()-62);
-        _text.insert(0, "...");
-    }
-
-    this->locationText->SetText(_text);
+    this->locationText->SetText(ShortenText(_text, 62, "..."));
 }
 
 void MainLayout::OpenAction(std::string _pathname)

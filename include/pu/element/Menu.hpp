@@ -22,11 +22,15 @@ namespace pu::element
     class MenuItem
     {
         public:
-            MenuItem(std::string Name);
+            MenuItem(std::string Name, std::string SecondName = "");
             ~MenuItem();
             std::string GetName();
+			std::string GetSecondName();
             void SetName(std::string Name);
+			void SetSecondName(std::string SecondName);
+			void SetSecondNameColor(draw::Color Color);
             draw::Color GetColor();
+			draw::Color GetSecondNameColor();
             void SetColor(draw::Color Color);
             void AddOnClick(std::function<void()> Callback, u64 Key = KEY_A);
             u32 GetCallbackCount();
@@ -36,18 +40,26 @@ namespace pu::element
             void SetIcon(std::string Icon);
             bool HasIcon();
             render::NativeFont GetFont();
+			render::NativeFont GetSecondFont();
             render::NativeTexture GetNameTexture();
+			render::NativeTexture GetSecondNameTexture();
             render::NativeTexture GetIconTexture();
+			void SetNameFont(std::string Font, u32 Size = 25);
+			void SetSecondNameFont(std::string Font, u32 Size = 20);
         private:
             std::string name;
+			std::string secondname;
             draw::Color clr;
+			draw::Color snclr;
             bool hasicon;
             std::string icon;
             std::vector<std::function<void()>> cbs;
             std::vector<u64> cbipts;
             render::NativeFont font;
+			render::NativeFont secondfont;
             render::NativeTexture itex;
             render::NativeTexture ntex;
+			render::NativeTexture sntex;
     };
 
     class Menu : public Element
@@ -91,7 +103,8 @@ namespace pu::element
 			bool IsIconOnly();
 			void SetScrollbarPosition(u32 scbpos);
 			void SetScrollbarWidth(u32 scbwidth);
-        protected:
+			void SetSecondNamePositionPercent(double Percent);
+        private:
             bool dtouch;
             u32 x;
             u32 y;
@@ -121,5 +134,6 @@ namespace pu::element
 			double iconScale;
 			u32 scbpos;
 			u32 scbwidth;
+			double snposper;
     };
 }
