@@ -359,16 +359,27 @@ void MainApplication::SelectAction()
 
 void MainApplication::SortAction()
 {
-    int choice = this->CreateShowDialog("Choose file sorting method", "", {"Alphabetical", "Reversed alphabetical"}, false);
-    switch (choice)
+    int choice = this->CreateShowDialog("Choose file sorting method", "", {"By name", "By name reversed", "By size", "By size reversed"}, false);
+    if (!this->GetMainLayout()->IsEmptyDirTextShown())
     {
-        case 0:
-            browser->ChangeSortType(SortType::Alphabetical);
-        break;
+        switch (choice)
+        {
+            case 0:
+                browser->ChangeSortType(SortType::Alphabetical);
+            break;
 
-        case 1:
-            browser->ChangeSortType(SortType::Alphabetical_Reversed);
-        break;
+            case 1:
+                browser->ChangeSortType(SortType::Alphabetical_Reversed);
+            break;
+
+            case 2:
+                browser->ChangeSortType(SortType::By_Size);
+            break;
+
+            case 3:
+                browser->ChangeSortType(SortType::By_Size_Reversed);
+            break;
+        }
     }
 }
 

@@ -7,6 +7,8 @@ std::string GetRomFsResource(std::string _name, std::string _dir = "Common");
 std::string GetRomFsFont(std::string _fullfontname);
 bool CompareNames(File _f, File _g);
 bool CompareNamesReversed(File _f, File _g);
+bool CompareSizes(File _f, File _g);
+bool CompareSizesReversed(File _f, File _g);
 std::string FormatSize(u32 _size);
 std::string FormatNumber(u32 _number);
 std::string ShortenText(std::string _text, u32 _maxchar, std::string _dots = "", bool _dotspos = 0); // _dotspos: 0 - left, 1 - right

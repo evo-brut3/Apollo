@@ -51,5 +51,7 @@ struct ClipboardNode
 enum SortType
 {
     Alphabetical = 0,
-    Alphabetical_Reversed = 1
+    Alphabetical_Reversed = 1,
+    By_Size = 2,
+    By_Size_Reversed = 3
 };

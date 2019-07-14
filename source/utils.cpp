@@ -17,6 +17,57 @@ void SortFiles(std::vector<File> &_files, SortType _sorttype)
         case SortType::Alphabetical_Reversed:
             std::sort(_files.rbegin(), _files.rend(), CompareNamesReversed);
         break;
+
+        case SortType::By_Size:
+        {
+            SortFiles(_files, SortType::Alphabetical);
+
+            std::vector<File>::iterator iter = _files.end();
+            for (std::vector<File>::iterator it = _files.begin(); it != _files.end(); it++)
+            {
+                if ((*it).type == 0)
+                {
+                    iter = it;
+                    break;
+                }
+            }
+            if (iter != _files.end())
+                std::partial_sort(iter, _files.end(), _files.begin(), CompareSizes);
+        }
+        break;
+
+        case SortType::By_Size_Reversed:
+        {
+            SortFiles(_files, SortType::Alphabetical);
+
+            std::vector<File>::iterator iter = _files.end();
+            for (std::vector<File>::iterator it = _files.begin(); it != _files.end(); it++)
+            {
+                if ((*it).type == 0)
+                {
+                    iter = it;
+                    break;
+                }
+            }
+            if (iter != _files.end())
+                std::partial_sort(iter, _files.end(), _files.begin(), CompareSizesReversed);
+            /*
+            SortFiles(_files, SortType::Alphabetical);
+
+            std::vector<File>::reverse_iterator iter = _files.rend();
+            for (std::vector<File>::reverse_iterator it = _files.rbegin(); it != _files.rend(); it++)
+            {
+                if ((*it).type == 0)
+                {
+                    iter = it;
+                    break;
+                }
+            }
+            if (iter != _files.rend())
+                std::partial_sort(iter, _files.rend(), _files.rbegin(), CompareSizes);
+            */
+        }
+        break;
     }
 }
 
@@ -89,6 +140,16 @@ bool CompareNamesReversed(File _f, File _g)
     }
 }
 
+bool CompareSizes(File _f, File _g)
+{
+    return (_f.size < _g.size);
+}
+
+bool CompareSizesReversed(File _f, File _g)
+{
+    return (_f.size > _g.size);
+}
+
 std::string FormatSize(u32 _size)
 {
     const char *sizes[6] = {" B", "KB", "MB", "GB", "TB", "PB"};
@@ -142,7 +203,7 @@ std::string WrapText(std::string _text, u32 _maxchar)
 {
     if (_text.length() > _maxchar)
     {
-        for (int i = 0; i < _text.length(); i++)
+        for (u32 i = 0; i < _text.length(); i++)
         {
             if (i % _maxchar == 0)
             {
