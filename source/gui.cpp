@@ -122,18 +122,9 @@ void MainLayout::SetLocationBarText(std::string _text)
     this->locationText->SetText(ShortenText(_text, 62, "..."));
 }
 
-void MainLayout::OpenAction(std::string _pathname)
+void MainLayout::OpenAction(const std::string &_pathname)
 {
-    switch (fs::IsDir(_pathname + R"(/)"))
-    {
-        case 0:
-
-        break;
-
-        case 1:
-            app->GetBrowser()->LoadFiles(_pathname);
-        break;
-    }
+    app->GetBrowser()->OpenDirectory(_pathname);
 }
 
 void MainLayout::SetOnFocus(bool _focus)

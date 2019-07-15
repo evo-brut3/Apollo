@@ -15,22 +15,42 @@ Browser::~Browser()
 {
 }
 
-void Browser::LoadFiles(std::string _path)
+void Browser::LoadFiles(const std::string &_pathname)
 {
     // If it is dir load files into vector - currentFiles, then change currentPath
-    currentFiles = fs::OpenDir(_path);
+    this->currentFiles = fs::OpenDir(_pathname);
 
     // to do: if openDir returns error then do not clear items and make error message
     // Sort elements from currentFiles and then load them into filesMenu
     SortFiles(currentFiles, sortType);
     app->GetMainLayout()->LoadItems(this->currentFiles);
 
-    // Change current location to _path
-    currentPath = _path;
+    // Change current location to _pathname
+    this->currentPath = _pathname;
     app->GetMainLayout()->SetLocationBarText(currentPath);
 
     // Set number of selected items to zero
-    numberOfSelected = 0;
+    this->numberOfSelected = 0;
+}
+
+void Browser::OpenDirectory(const std::string &_pathname)
+{
+    switch (fs::IsDir(_pathname + R"(/)"))
+    {
+        case 0:
+
+        break;
+
+        case 1:
+        {
+            u32 index = app->GetMainLayout()->GetSelectedIndex();
+            u32 scroll = app->GetMainLayout()->GetScrollIndex();
+            this->lastCursorPosition.push_back(index);
+            this->lastScrollPosition.push_back(scroll);
+            this->LoadFiles(_pathname);
+        }
+        break;
+    }
 }
 
 void Browser::Refresh()
@@ -50,6 +70,9 @@ void Browser::NavigateBack()
     {
         this->currentPath.erase(this->currentPath.begin()+d, this->currentPath.end());
         this->LoadFiles(this->currentPath);
+        app->GetMainLayout()->SetCursorPosition(this->lastCursorPosition.back(), this->lastScrollPosition.back());
+        this->lastCursorPosition.pop_back();
+        this->lastScrollPosition.pop_back();
     }
 }
 
@@ -57,9 +80,9 @@ void Browser::SelectFile()
 {
     // Select or unselect if already selected
     u32 index = app->GetMainLayout()->GetSelectedIndex();
-    currentFiles.at(index).selected = !currentFiles.at(index).selected;
+    this->currentFiles.at(index).selected = !this->currentFiles.at(index).selected;
 
-    switch (currentFiles.at(index).selected)
+    switch (this->currentFiles.at(index).selected)
     {
         case 0: // unselected
             app->GetMainLayout()->SetMenuElementIndexColor({10, 10, 10, 255}); // black
@@ -74,7 +97,7 @@ void Browser::SelectFile()
 
     if (this->GetNumberOfSelected() == 1)
     {
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {
@@ -102,21 +125,20 @@ void Browser::RemoveFiles()
     if (this->GetNumberOfSelected() > 1)
     {
         u32 number = 0;
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {
                 auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(f.pathname);
                 number += nodirs;
-                nofiles += (f.type == 0) ? 1 : 0;
-                number += nofiles;
+                number += (f.type == 0) ? nofiles + 1 : nofiles + 0;
             }
         }
 
         app->GetDeleteLayout()->Start(number);
         app->CallForRender();
 
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {
@@ -151,7 +173,7 @@ void Browser::CopyFiles()
 
     if (this->GetNumberOfSelected() > 1)
     {
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {
@@ -161,7 +183,7 @@ void Browser::CopyFiles()
                     R"(/)" + f.name,                            // pathname
                     fs::IsDir(f.path + R"(/)" + f.name)         // directory
                 );
-                clipboard.push_back(node);
+                this->clipboard.push_back(node);
             }
         }
     }
@@ -173,7 +195,7 @@ void Browser::CopyFiles()
             R"(/)" + this->GetFileName(),               // pathname
             fs::IsDir(this->GetFilePathName())          // directory
         );
-        clipboard.push_back(node);
+        this->clipboard.push_back(node);
     }
 
     this->moveFlag = 0;
@@ -188,12 +210,11 @@ void Browser::MoveFiles()
 void Browser::PasteFiles()
 {
     // Check if the destined folder is the source folder
-    if (clipboard.at(0).base == currentPath)
+    if (clipboard.at(0).base == this->currentPath)
         return;
 
-    std::vector<std::string> exceptionList;
     u32 number = 0;
-    for (auto &f : clipboard)
+    for (auto &f : this->clipboard)
     {
         // Check if the destined folder is the subfolder of the source folder
         std::size_t pos = this->currentPath.find(f.base + f.path);
@@ -213,9 +234,9 @@ void Browser::PasteFiles()
     app->LoadLayout(app->GetCopyLayout());
     app->GetCopyLayout()->Start(number, this->moveFlag);
 
-    for (auto &f : clipboard)
+    for (auto &f : this->clipboard)
     {
-        this->CopyFileOrDirOverwrite(f.base + f.path, currentPath + f.path, f.directory, moveFlag);
+        this->CopyFileOrDirOverwrite(f.base + f.path, this->currentPath + f.path, f.directory, moveFlag);
     }
 
     this->moveFlag = 0;
@@ -243,33 +264,33 @@ u32 Browser::GetClipboardSize()
 std::string Browser::GetFileName()
 {
     if (this->GetNumberOfSelected() == 0)
-        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
+        return this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
     else
-        return firstSelected.name;
+        return this->firstSelected.name;
 }
 
 std::string Browser::GetFilePath()
 {
     if (this->GetNumberOfSelected() == 0)
-        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).path;
+        return this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).path;
     else
-        return firstSelected.path;
+        return this->firstSelected.path;
 }
 
 std::string Browser::GetFilePathName()
 {
     if (this->GetNumberOfSelected() == 0)
-        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname;
+        return this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname;
     else
-        return firstSelected.pathname;
+        return this->firstSelected.pathname;
 }
 
 std::string Browser::GetFilePermissions()
 {
     if (this->GetNumberOfSelected() == 0)
-        return fs::GetPermissions(currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
+        return fs::GetPermissions(this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).pathname);
     else
-        return fs::GetPermissions(firstSelected.pathname);
+        return fs::GetPermissions(this->firstSelected.pathname);
 }
 
 u32 Browser::GetFilesSize()
@@ -285,7 +306,7 @@ u32 Browser::GetFilesSize()
     else
     {
 
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {
@@ -302,9 +323,9 @@ u32 Browser::GetFilesSize()
 bool Browser::GetFileType()
 {
     if (this->GetNumberOfSelected() == 0)
-        return currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).type;
+        return this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).type;
     else
-        return firstSelected.type;
+        return this->firstSelected.type;
 }
 
 std::pair<u32, u32> Browser::CountMultipleFilesType()
@@ -324,7 +345,7 @@ std::pair<u32, u32> Browser::CountMultipleFilesType()
     }
     else
     {
-        for (auto &f : currentFiles)
+        for (auto &f : this->currentFiles)
         {
             if (f.selected == true)
             {

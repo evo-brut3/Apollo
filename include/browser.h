@@ -11,7 +11,8 @@ class Browser
     public:
         Browser();
         ~Browser();
-        void LoadFiles(std::string _path);
+        void LoadFiles(const std::string &_pathname);
+        void OpenDirectory(const std::string &_pathname);
         void Refresh();
         void NavigateBack();
         void SelectFile();
@@ -41,6 +42,8 @@ class Browser
         std::string currentPath = SDCARD_PATH;
         std::vector<File> currentFiles;
         std::vector<ClipboardNode> clipboard;
+        std::vector<u32> lastCursorPosition;
+        std::vector<u32> lastScrollPosition;
         inline void CopyFileOrDir(std::string _source, std::string _dest, bool _type);
         inline void CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type, bool _moveflag);
 };
