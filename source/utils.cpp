@@ -152,7 +152,7 @@ bool CompareSizesReversed(File _f, File _g)
 
 std::string FormatSize(u32 _size)
 {
-    const char *sizes[6] = {" B", "KB", "MB", "GB", "TB", "PB"};
+    const char *sizes[6] = {"B ", "KB", "MB", "GB", "TB", "PB"};
     char sizeout[32] = {0};
 
     for (int i = 0; i < 5; i++)
