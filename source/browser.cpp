@@ -91,7 +91,7 @@ void Browser::RenameFile()
     std::string path = this->GetFilePath();
     std::string oldname = this->GetFileName();
     std::string newname = sys::GetTextFromSoftwareKeyboard("Error: Couldn't rename the file, the name was too long", "Enter new filename", oldname);
-    fs::RenameFile(pathname, path + R"(/)" + newname);
+    fs::Rename(pathname, path + R"(/)" + newname);
     this->Refresh();
 }
 
@@ -191,6 +191,7 @@ void Browser::PasteFiles()
     if (clipboard.at(0).base == currentPath)
         return;
 
+    std::vector<std::string> exceptionList;
     u32 number = 0;
     for (auto &f : clipboard)
     {
@@ -202,27 +203,10 @@ void Browser::PasteFiles()
             return;
         }
 
-        // List all of files of a single element of clipboard
-        std::vector<ClipboardNode> allFiles;
-        allFiles.push_back(f);
-        fs::ListFilesRecursive(f.base, f.path, allFiles);
-
-        // Check if there is a possibility that there are already existing files or if there are
-        // already other files/dirs which name is the same and flag them in clipboard
-        for (auto &g : allFiles)
-        {
-            if (fs::Exists(currentPath + g.path))
-            {
-                f.overwrite = 1;
-                break;
-            }
-        }
-
         // Count files
         auto [nodirs, nofiles] = fs::CountFilesAndDirsRecursive(f.base + f.path);
         number += nodirs;
-        nofiles += (f.directory == false) ? 1 : 0;
-        number += nofiles;
+        number += (f.directory == false) ? nofiles + 1 : nofiles + 0;
     }
 
     app->GetCopyLayout()->Reset();
@@ -231,33 +215,9 @@ void Browser::PasteFiles()
 
     for (auto &f : clipboard)
     {
-        switch (f.overwrite)
-        {
-            case 0: // no need to check if there are already the same files/dirs
-                this->CopyFileOrDir(f.base + f.path, currentPath + f.path, f.directory);
-            break;
-
-            case 1: // check if there are already the same files/dirs
-                this->CopyFileOrDirOverwrite(f.base + f.path, currentPath + f.path, f.directory);
-            break;
-        }
+        this->CopyFileOrDirOverwrite(f.base + f.path, currentPath + f.path, f.directory, moveFlag);
     }
 
-    /*
-    if (this->moveFlag == 1)
-    {
-        app->GetCopyLayout()->Finish();
-        for (auto &f : clipboard)
-        {
-            fs::DeleteDirRecursive(f.base + f.path);
-            app->GetCopyLayout()->FinishUpdate(f.base + f.path);
-        }
-
-        this->moveFlag = 0;
-        this->clipboardHeader.clear();
-        this->clipboard.clear();
-    }
-    */
     this->moveFlag = 0;
     this->clipboard.clear();
     this->Refresh();
@@ -390,10 +350,10 @@ inline void Browser::CopyFileOrDir(std::string _source, std::string _dest, bool 
         fs::CopyFile(_source, _dest);
 }
 
-inline void Browser::CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type)
+inline void Browser::CopyFileOrDirOverwrite(std::string _source, std::string _dest, bool _type, bool _moveflag)
 {
     if (_type)
-        fs::CopyDirOverwrite(_source, _dest);
+        fs::CopyDirOverwrite(_source, _dest, _moveflag);
     else
-        fs::CopyFileOverwrite(_source, _dest);
+        fs::CopyFileOverwrite(_source, _dest, _moveflag);
 }

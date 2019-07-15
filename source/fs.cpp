@@ -173,7 +173,7 @@ namespace fs
         }
     }
 
-    void CopyFileOverwrite(const std::string &_source, const std::string &_dest)
+    void CopyFileOverwrite(const std::string &_source, const std::string &_dest, bool _moveflag)
     {
         if (fs::Exists(_dest))
         {
@@ -190,16 +190,20 @@ namespace fs
             {
                 int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + _dest + " with this: " + _source, {"No", "Yes"}, false);
                 if (c == 1)
+                {
                     CopyFile(_source, _dest);
+                    if (_moveflag == true)  Remove(_source);
+                }
             }
         }
         else
         {
             CopyFile(_source, _dest);
+            if (_moveflag == true)  Remove(_source);
         }
     }
 
-    static void _CopyDirOverwrite(const std::string &_source, const std::string &_dest)
+    static void _CopyDirOverwrite(const std::string &_source, const std::string &_dest, bool _moveflag)
     {
         MakeDir(_dest);
         auto [directories, files] = GetContents(_source);
@@ -209,7 +213,7 @@ namespace fs
             for (auto &d : directories)
             {
                 app->GetCopyLayout()->Update(_source, _dest);
-                CopyDirOverwrite(_source + R"(/)" + d, _dest + R"(/)" + d);
+                CopyDirOverwrite(_source + R"(/)" + d, _dest + R"(/)" + d, _moveflag);
             }
         }
 
@@ -218,12 +222,12 @@ namespace fs
             for (auto &f : files)
             {
                 app->GetCopyLayout()->Update(_source + R"(/)" + f, _dest + R"(/)" + f);
-                CopyFileOverwrite(_source + R"(/)" + f, _dest + R"(/)" + f);
+                CopyFileOverwrite(_source + R"(/)" + f, _dest + R"(/)" + f, _moveflag);
             }
         }
     }
 
-    void CopyDirOverwrite(const std::string &_source, const std::string &_dest)
+    void CopyDirOverwrite(const std::string &_source, const std::string &_dest, bool _moveflag)
     {
         if (fs::Exists(_dest))
         {
@@ -240,31 +244,36 @@ namespace fs
             {
                 int c = app->CreateShowDialog("Do you want to overwrite this " + type + "?", "Element: " + _dest + " with this: " + _source, {"No", "Yes"}, false);
                 if (c == 1)
-                    _CopyDirOverwrite(_source, _dest);
+                {
+                    _CopyDirOverwrite(_source, _dest, _moveflag);
+                    if (_moveflag == true)  Remove(_source);
+                }
+
             }
         }
         else
         {
-            _CopyDirOverwrite(_source, _dest);
+            _CopyDirOverwrite(_source, _dest, _moveflag);
+            if (_moveflag == true)  Remove(_source);
         }
     }
 
-    int RenameFile(const std::string &_pathname, const std::string &_newname)
+    int Rename(const std::string &_pathname, const std::string &_newname)
     {
         return (rename(_pathname.c_str(), _newname.c_str()));
     }
 
-    int Remove(const std::string &_filepath)
+    int Remove(const std::string &_pathname)
     {
-        int result;
-        switch (IsDir(_filepath))
+        int result = 0;
+        switch (IsDir(_pathname))
         {
             case 0:
-                result = remove(_filepath.c_str());
+                result = remove(_pathname.c_str());
             break;
 
             case 1:
-                result = rmdir(_filepath.c_str());
+                result = rmdir(_pathname.c_str());
             break;
         }
         return result;
