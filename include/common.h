@@ -55,3 +55,11 @@ enum SortType
     By_Size = 2,
     By_Size_Reversed = 3
 };
+
+enum ControlType
+{
+    MainLayout = 0,
+    MoveOrCopyLatout = 1,
+    DeleteLayout = 2,
+    TextLayout = 3
+};

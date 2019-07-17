@@ -51,21 +51,6 @@ void SortFiles(std::vector<File> &_files, SortType _sorttype)
             }
             if (iter != _files.end())
                 std::partial_sort(iter, _files.end(), _files.begin(), CompareSizesReversed);
-            /*
-            SortFiles(_files, SortType::Alphabetical);
-
-            std::vector<File>::reverse_iterator iter = _files.rend();
-            for (std::vector<File>::reverse_iterator it = _files.rbegin(); it != _files.rend(); it++)
-            {
-                if ((*it).type == 0)
-                {
-                    iter = it;
-                    break;
-                }
-            }
-            if (iter != _files.rend())
-                std::partial_sort(iter, _files.rend(), _files.rbegin(), CompareSizes);
-            */
         }
         break;
     }
@@ -203,12 +188,10 @@ std::string WrapText(std::string _text, u32 _maxchar)
 {
     if (_text.length() > _maxchar)
     {
-        for (u32 i = 0; i < _text.length(); i++)
+        for (u32 i = 0; i < _text.length(); i += _maxchar)
         {
-            if (i % _maxchar == 0)
-            {
-                _text.insert(i, "\n");
-            }
+            if (i % _maxchar == 0 && i != 0)
+                _text.insert(i-1, "\n");
         }
     }
     return _text;

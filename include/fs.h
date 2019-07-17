@@ -23,4 +23,6 @@ namespace fs
     void ListFilesRecursive(const std::string &_baselocation, const std::string &_filename, std::vector<ClipboardNode> &_filelist, const std::string &_pathname = "");
     std::pair<u32, u32> CountFilesAndDirsRecursive(const std::string &_pathname);
     u32 GetDirSizeRecursive(const std::string &_pathname);
+
+    std::vector<std::string> ReadTextFile(const std::string &_pathname, u32 _scroll);
 }

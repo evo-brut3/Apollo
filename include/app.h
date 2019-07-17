@@ -5,6 +5,7 @@
 // all in use, dont know about common.h
 #include "layouts/copy_layout.h"
 #include "layouts/delete_layout.h"
+#include "layouts/text_layout.h"
 
 int Initialize();
 void Finalize();
@@ -15,9 +16,11 @@ class MainApplication : public pu::Application
         MainApplication();
         ~MainApplication();
         void Update();
-        MainLayout *GetMainLayout();
+        void SetInputControl(ControlType _controltype);
+        ui::MainLayout *GetMainLayout();
         ui::CopyLayout *GetCopyLayout();
         ui::DeleteLayout *GetDeleteLayout();
+        ui::TextLayout *GetTextLayout();
         Browser *GetBrowser();
 
         void CopyAction();
@@ -53,9 +56,10 @@ class MainApplication : public pu::Application
         void InitAllLayouts();
 
         // instances
-        MainLayout *mainLayout;
+        ui::MainLayout *mainLayout;
         ui::CopyLayout *copyLayout;
         ui::DeleteLayout *deleteLayout;
+        ui::TextLayout *textLayout;
 
         /// Module instances
         Browser *browser;

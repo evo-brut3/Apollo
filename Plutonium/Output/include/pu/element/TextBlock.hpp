@@ -32,6 +32,7 @@ namespace pu::element
             std::string GetText();
             void SetText(std::string Text);
             void SetFont(render::NativeFont Font);
+			void SetFont(std::string Font, u32 Size);
             draw::Color GetColor();
             void SetColor(draw::Color Color);
             void OnRender(render::Renderer *Drawer);

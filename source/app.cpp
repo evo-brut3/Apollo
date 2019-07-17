@@ -42,32 +42,7 @@ MainApplication::MainApplication()
     this->InitAllLayouts();
     this->InitAllModules();
     this->AddThread(std::bind(&MainApplication::Update, this));
-
-    this->SetOnInput([&](u64 Down, u64 Up, u64 Held, bool Touch)
-    {
-        if (Down & KEY_MINUS)           this->ExitAction();
-        if (Down & KEY_PLUS)            this->InfoAction();
-        if (Down & KEY_B)               this->NavigateBackAction();
-        if (Down & KEY_X)               this->RenameAction();
-        if (Down & KEY_Y)               this->SelectAction();
-        if (Down & KEY_L)               this->CopyAction();
-        if (Down & KEY_R)               this->PasteAction();
-        if (Down & KEY_ZL)              this->MoveAction();
-        if (Down & KEY_ZR)              this->DeleteAction();
-        if (Down & KEY_LSTICK)          this->SortAction();
-        if (Down & KEY_RSTICK)          this->HelpAction();
-
-        if (Down & KEY_LSTICK_LEFT) // focus on sidebar
-        {
-            this->sidebarMenu->SetOnFocus(true);
-            this->GetMainLayout()->SetOnFocus(false);
-        }
-        if (Down & KEY_LSTICK_RIGHT) // focus on main layout
-        {
-            this->sidebarMenu->SetOnFocus(false);
-            this->GetMainLayout()->SetOnFocus(true);
-        }
-    });
+    this->SetInputControl(ControlType::MainLayout);
 }
 
 MainApplication::~MainApplication()
@@ -137,7 +112,64 @@ void MainApplication::Update()
     }
 }
 
-MainLayout *MainApplication::GetMainLayout()
+void MainApplication::SetInputControl(ControlType _controltype)
+{
+    switch (_controltype)
+    {
+        case 0:
+        {
+            this->SetOnInput([&](u64 Down, u64 Up, u64 Held, bool Touch)
+            {
+                if (Down & KEY_MINUS)           this->ExitAction();
+                if (Down & KEY_PLUS)            this->InfoAction();
+                if (Down & KEY_B)               this->NavigateBackAction();
+                if (Down & KEY_X)               this->RenameAction();
+                if (Down & KEY_Y)               this->SelectAction();
+                if (Down & KEY_L)               this->CopyAction();
+                if (Down & KEY_R)               this->PasteAction();
+                if (Down & KEY_ZL)              this->MoveAction();
+                if (Down & KEY_ZR)              this->DeleteAction();
+                if (Down & KEY_LSTICK)          this->SortAction();
+                if (Down & KEY_RSTICK)          this->HelpAction();
+
+                if (Down & KEY_LSTICK_LEFT) // focus on sidebar
+                {
+                    this->sidebarMenu->SetOnFocus(true);
+                    this->GetMainLayout()->SetOnFocus(false);
+                }
+                if (Down & KEY_LSTICK_RIGHT) // focus on main layout
+                {
+                    this->sidebarMenu->SetOnFocus(false);
+                    this->GetMainLayout()->SetOnFocus(true);
+                }
+            });
+        }
+        break;
+
+        case 3:
+        {
+            this->SetOnInput([&](u64 Down, u64 Up, u64 Held, bool Touch)
+            {
+                if (Down & KEY_MINUS)           this->ExitAction();
+                if (Down & KEY_B)               this->GetTextLayout()->Exit();
+
+                if (Down & KEY_LSTICK_LEFT) // focus on sidebar
+                {
+                    this->sidebarMenu->SetOnFocus(true);
+                    this->GetMainLayout()->SetOnFocus(false);
+                }
+                if (Down & KEY_LSTICK_RIGHT) // focus on main layout
+                {
+                    this->sidebarMenu->SetOnFocus(false);
+                    this->GetMainLayout()->SetOnFocus(true);
+                }
+            });
+        }
+        break;
+    }
+}
+
+ui::MainLayout *MainApplication::GetMainLayout()
 {
     return this->mainLayout;
 }
@@ -150,6 +182,11 @@ ui::CopyLayout *MainApplication::GetCopyLayout()
 ui::DeleteLayout *MainApplication::GetDeleteLayout()
 {
     return this->deleteLayout;
+}
+
+ui::TextLayout *MainApplication::GetTextLayout()
+{
+    return this->textLayout;
 }
 
 Browser *MainApplication::GetBrowser()
@@ -170,7 +207,7 @@ void MainApplication::InitAllLayouts()
     this->prewifistatus = -1;
 
     /// Layouts
-    this->mainLayout = new MainLayout();
+    this->mainLayout = new ui::MainLayout();
     allLayouts.push_back(this->mainLayout);
 
     this->copyLayout = new ui::CopyLayout();
@@ -179,9 +216,12 @@ void MainApplication::InitAllLayouts()
     this->deleteLayout = new ui::DeleteLayout();
     allLayouts.push_back(this->deleteLayout);
 
+    this->textLayout = new ui::TextLayout();
+    allLayouts.push_back(this->textLayout);
+
     /// Elements
     // details
-    this->footerBottom = new pu::element::Rectangle(0, 647, 1280, 72, {235, 235, 235, 255});
+    this->footerBottom = new pu::element::Rectangle(0, 647, 1280, 73, {235, 235, 235, 255});
     allElements.push_back(this->footerBottom);
 
     this->footerLine = new pu::element::Rectangle(146, 647, 1280-146-30, 1, {45, 45, 45, 255});
@@ -290,7 +330,7 @@ void MainApplication::InitAllLayouts()
     //allElements.push_back(this->debugText);
 
     // load layouts and give them all the necessary elements
-    this->LoadLayout(mainLayout);
+    this->LoadLayout(this->mainLayout);
     for (auto &l : allLayouts)
     {
         for (auto &e : allElements)

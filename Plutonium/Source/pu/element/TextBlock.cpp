@@ -86,6 +86,14 @@ namespace pu::element
         render::DeleteTexture(this->ntex);
         this->ntex = render::RenderText(Font, this->text, this->clr);
     }
+	
+	void TextBlock::SetFont(std::string Font, u32 Size)
+	{
+		render::DeleteFont(this->fnt);
+		this->fnt = render::LoadFont(Font, Size);;
+		render::DeleteTexture(this->ntex);
+		this->ntex = render::RenderText(this->fnt, this->text, this->clr);
+	}
 
     draw::Color TextBlock::GetColor()
     {

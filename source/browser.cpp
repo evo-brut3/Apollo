@@ -38,7 +38,10 @@ void Browser::OpenDirectory(const std::string &_pathname)
     switch (fs::IsDir(_pathname + R"(/)"))
     {
         case 0:
-
+        {
+            app->LoadLayout(app->GetTextLayout());
+            app->GetTextLayout()->Start(fs::ReadTextFile(_pathname, 0), _pathname);
+        }
         break;
 
         case 1:

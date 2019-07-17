@@ -83,6 +83,7 @@ namespace pu::element
 		this->ntex = render::RenderText(this->font, this->name, this->clr);
 		
 	}
+	
 	void MenuItem::SetSecondNameFont(std::string Font, u32 Size)
 	{
 		render::DeleteFont(this->secondfont);
