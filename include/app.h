@@ -16,7 +16,6 @@ class MainApplication : public pu::Application
         MainApplication();
         ~MainApplication();
         void Update();
-        void SetInputControl(ControlType _controltype);
         ui::MainLayout *GetMainLayout();
         ui::CopyLayout *GetCopyLayout();
         ui::DeleteLayout *GetDeleteLayout();
@@ -60,6 +59,12 @@ class MainApplication : public pu::Application
         ui::CopyLayout *copyLayout;
         ui::DeleteLayout *deleteLayout;
         ui::TextLayout *textLayout;
+
+        // input methods for all layouts
+        void mainLayoutInput(u64 Down, u64 Up, u64 Held);
+        void copyLayoutInput(u64 Down, u64 Up, u64 Held);
+        void deleteLayoutInput(u64 Down, u64 Up, u64 Held);
+        void textLayoutInput(u64 Down, u64 Up, u64 Held);
 
         /// Module instances
         Browser *browser;

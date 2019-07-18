@@ -24,5 +24,5 @@ namespace fs
     std::pair<u32, u32> CountFilesAndDirsRecursive(const std::string &_pathname);
     u32 GetDirSizeRecursive(const std::string &_pathname);
 
-    std::vector<std::string> ReadTextFile(const std::string &_pathname, u32 _scroll);
+    std::vector<std::string> ReadTextFile(const std::string &_pathname);
 }

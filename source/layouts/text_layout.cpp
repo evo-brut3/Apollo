@@ -35,36 +35,56 @@ namespace ui
 
     void TextLayout::Start(std::vector<std::string> _text, const std::string &_pathname)
     {
-        app->SetInputControl(ControlType::TextLayout);
-
-        this->locationText->SetText(_pathname);
-
-        std::string outputtext;
-        u32 maxlines = 17;
-        for (auto &t : _text)
-        {
-            std::string buff = WrapText(t, 86);
-            if (maxlines == 0)  break;
-            size_t n = std::count(buff.begin(), buff.end(), '\n');
-            maxlines -= n+1;
-            outputtext += buff + "\n";
-        }
-        this->textContainer->SetText(outputtext);
+        this->scroll = 0;
+        this->locationText->SetText(ShortenText(_pathname, 62, "..."));
+        this->originalTextFile = _text;
+        this->PrepareTextToView();
+        this->LoadTextIntoContainer();
     }
 
-    void TextLayout::Exit()
+    void TextLayout::End()
     {
+        this->originalTextFile.clear();
+        this->wrappedTextFile.clear();
+        this->locationText->SetText("");
+        this->scroll = 0;
         app->LoadLayout(app->GetMainLayout());
-        app->SetInputControl(ControlType::MainLayout);
     }
 
     void TextLayout::ScrollUp()
     {
-
+        this->scroll -= (this->scroll == 0) ? 0 : 1;
+        this->LoadTextIntoContainer();
     }
 
     void TextLayout::ScrollDown()
     {
+        this->scroll += (this->wrappedTextFile.size()-2 < this->scroll) ? 0 : 1;
+        this->LoadTextIntoContainer();
+    }
 
+    void TextLayout::LoadTextIntoContainer()
+    {
+        std::string outputtext;
+        u32 maxlines = 17;
+        for (std::vector<std::string>::size_type t = 0 + this->scroll; t != this->wrappedTextFile.size(); t++)
+        {
+            if (maxlines == 0)  break;
+            maxlines--;
+            outputtext += this->wrappedTextFile.at(t) + "\n";
+        }
+        this->textContainer->SetText(outputtext);
+    }
+
+    void TextLayout::PrepareTextToView()
+    {
+        this->wrappedTextFile.clear();
+        u32 pos = 0;
+        for (auto &t : this->originalTextFile)
+        {
+            std::vector<std::string> txtcntr = DivideLongText(t, 86);
+            this->wrappedTextFile.insert(this->wrappedTextFile.begin() + pos, txtcntr.begin(), txtcntr.end());
+            pos += txtcntr.size();
+        }
     }
 }

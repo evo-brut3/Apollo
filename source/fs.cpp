@@ -396,7 +396,7 @@ namespace fs
         return size;
     }
 
-    std::vector<std::string> ReadTextFile(const std::string &_pathname, u32 _scroll)
+    std::vector<std::string> ReadTextFile(const std::string &_pathname)
     {
         std::vector<std::string> readedlines;
         std::ifstream file(_pathname);
@@ -408,7 +408,7 @@ namespace fs
             {
                 if (file.eof())  break;
                 getline(file, linebuff);
-                readedlines.push_back(linebuff);//(WrapText(linebuff, 40));
+                readedlines.push_back(linebuff);
             }
         }
         file.close();

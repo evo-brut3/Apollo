@@ -13,6 +13,7 @@ std::string FormatSize(u32 _size);
 std::string FormatNumber(u32 _number);
 std::string ShortenText(std::string _text, u32 _maxchar, std::string _dots = "", bool _dotspos = 0); // _dotspos: 0 - left, 1 - right
 std::string WrapText(std::string _text, u32 _maxchar);
+std::vector<std::string> DivideLongText(std::string _text, u32 _maxchar);
 
 namespace sys
 {

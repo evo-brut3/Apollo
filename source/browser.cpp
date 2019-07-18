@@ -40,7 +40,7 @@ void Browser::OpenDirectory(const std::string &_pathname)
         case 0:
         {
             app->LoadLayout(app->GetTextLayout());
-            app->GetTextLayout()->Start(fs::ReadTextFile(_pathname, 0), _pathname);
+            app->GetTextLayout()->Start(fs::ReadTextFile(_pathname), _pathname);
         }
         break;
 

@@ -11,13 +11,18 @@ namespace ui
             void Start(std::vector<std::string> _text, const std::string &_pathname);
             void ScrollUp();
             void ScrollDown();
-            void Exit();
+            void ScrollUpFast();
+            void ScrollDownFast();
+            void End();
 
         private:
+            u32 scroll = 0;
+            std::vector<std::string> originalTextFile;
+            std::vector<std::string> wrappedTextFile;
             pu::element::TextBlock *textContainer;
-
-            // location bar
             pu::element::TextBlock *locationText;
             pu::element::Image *locationIcon;
+            void LoadTextIntoContainer();
+            void PrepareTextToView();
     };
 }

@@ -194,7 +194,29 @@ std::string WrapText(std::string _text, u32 _maxchar)
                 _text.insert(i-1, "\n");
         }
     }
+
     return _text;
+}
+
+std::vector<std::string> DivideLongText(std::string _text, u32 _maxchar)
+{
+    std::vector<std::string> textcontainer;
+    u32 startpos = 0;
+
+    if (_text.length() > _maxchar)
+    {
+        for (u32 i = 0; i < _text.length(); i += _maxchar)
+        {
+            startpos = i;
+            textcontainer.push_back(_text.substr(startpos, _maxchar));
+        }
+    }
+    else
+    {
+        textcontainer.push_back(_text);
+    }
+
+    return textcontainer;
 }
 
 namespace sys
