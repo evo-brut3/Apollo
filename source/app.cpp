@@ -321,7 +321,7 @@ void MainApplication::InitAllLayouts()
 
     this->debugText = new pu::element::TextBlock(1, 1, "debug");
     debugText->SetColor({242, 38, 19, 1});
-    allElements.push_back(this->debugText);
+    //allElements.push_back(this->debugText);
 
     // load layouts and give them all the necessary elements
     this->LoadLayout(this->mainLayout);

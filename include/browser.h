@@ -29,6 +29,7 @@ class Browser
         std::string GetFilePath();
         std::string GetFilePathName();
         std::string GetFilePermissions();
+        std::string GetFileExtension();
         u32 GetFilesSize();
         bool GetFileType();
         std::pair<u32, u32> CountMultipleFilesType(); // first - number of files, second - number of dirs

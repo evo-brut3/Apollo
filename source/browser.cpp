@@ -296,6 +296,16 @@ std::string Browser::GetFilePermissions()
         return fs::GetPermissions(this->firstSelected.pathname);
 }
 
+std::string Browser::GetFileExtension()
+{
+    std::string currentfile = "";
+    if (this->GetNumberOfSelected() == 0)
+        currentfile = this->currentFiles.at(app->GetMainLayout()->GetSelectedIndex()).name;
+    else
+        currentfile = this->firstSelected.name;
+    return currentfile.substr(currentfile.find_last_of(".") + 1);
+}
+
 u32 Browser::GetFilesSize()
 {
     u32 allsize = 0;

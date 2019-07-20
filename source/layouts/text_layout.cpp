@@ -59,7 +59,7 @@ namespace ui
 
     void TextLayout::ScrollDown()
     {
-        this->scroll += (this->wrappedTextFile.size()-2 < this->scroll) ? 0 : 1;
+        this->scroll += (this->wrappedTextFile.size()-3 < this->scroll) ? 0 : 1;
         this->LoadTextIntoContainer();
     }
 
@@ -82,7 +82,7 @@ namespace ui
         u32 pos = 0;
         for (auto &t : this->originalTextFile)
         {
-            std::vector<std::string> txtcntr = DivideLongText(t, 86);
+            std::vector<std::string> txtcntr = DivideLongText(t, 85);
             this->wrappedTextFile.insert(this->wrappedTextFile.begin() + pos, txtcntr.begin(), txtcntr.end());
             pos += txtcntr.size();
         }
