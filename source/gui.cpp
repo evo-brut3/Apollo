@@ -76,7 +76,7 @@ namespace ui
 
                 // to do: check whether directory is empty/file
                 item->SetIcon(GetRomFsResource(GetRomFsFileExt(element.type)));
-                item->AddOnClick(std::bind(&MainLayout::OpenAction, this, element.pathname), KEY_A);
+                item->AddOnClick(std::bind(&MainLayout::OpenAction, this), KEY_A);
                 this->filesMenu->AddItem(item);
             }
 
@@ -122,9 +122,9 @@ namespace ui
         this->locationText->SetText(ShortenText(_text, 62, "..."));
     }
 
-    void MainLayout::OpenAction(const std::string &_pathname)
+    void MainLayout::OpenAction()
     {
-        app->GetBrowser()->OpenDirectory(_pathname);
+        app->GetBrowser()->Open();
     }
 
     void MainLayout::SetOnFocus(bool _focus)

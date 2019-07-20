@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cctype>
 #include "fs.h"
 #include "app.h"
 
@@ -27,7 +28,7 @@ namespace fs
         std::vector<File> files;
 
         dir = opendir(_pathname.c_str());
-        if (dir!=NULL)
+        if (dir != NULL)
         {
             while ((ent = readdir(dir)))
             {
@@ -414,5 +415,26 @@ namespace fs
         file.close();
 
         return readedlines;
+    }
+
+    bool IsFileBinary(const std::string &_pathname)
+    {
+        bool binflag = false;
+        std::ifstream file(_pathname);
+        char charbuff;
+
+        if (file.good())
+        {
+            while (file >> std::noskipws >> charbuff)
+            {
+                if (!isascii(charbuff) || (iscntrl(charbuff) && !isspace(charbuff)))
+                {
+                    binflag = true;
+                    break;
+                }
+            }
+        }
+
+        return binflag;
     }
 }

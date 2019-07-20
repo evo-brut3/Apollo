@@ -12,7 +12,8 @@ class Browser
         Browser();
         ~Browser();
         void LoadFiles(const std::string &_pathname);
-        void OpenDirectory(const std::string &_pathname);
+        void Open();
+        void OpenFile();
         void Refresh();
         void NavigateBack();
         void SelectFile();

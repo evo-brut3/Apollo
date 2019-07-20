@@ -25,4 +25,5 @@ namespace fs
     u32 GetDirSizeRecursive(const std::string &_pathname);
 
     std::vector<std::string> ReadTextFile(const std::string &_pathname);
+    bool IsFileBinary(const std::string &_pathname);
 }

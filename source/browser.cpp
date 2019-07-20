@@ -22,25 +22,24 @@ void Browser::LoadFiles(const std::string &_pathname)
 
     // to do: if openDir returns error then do not clear items and make error message
     // Sort elements from currentFiles and then load them into filesMenu
-    SortFiles(currentFiles, sortType);
+    SortFiles(this->currentFiles, this->sortType);
     app->GetMainLayout()->LoadItems(this->currentFiles);
 
     // Change current location to _pathname
     this->currentPath = _pathname;
-    app->GetMainLayout()->SetLocationBarText(currentPath);
+    app->GetMainLayout()->SetLocationBarText(this->currentPath);
 
     // Set number of selected items to zero
     this->numberOfSelected = 0;
 }
 
-void Browser::OpenDirectory(const std::string &_pathname)
+void Browser::Open()
 {
-    switch (fs::IsDir(_pathname + R"(/)"))
+    switch (this->GetFileType())
     {
         case 0:
         {
-            app->LoadLayout(app->GetTextLayout());
-            app->GetTextLayout()->Start(fs::ReadTextFile(_pathname), _pathname);
+            this->OpenFile();
         }
         break;
 
@@ -50,9 +49,40 @@ void Browser::OpenDirectory(const std::string &_pathname)
             u32 scroll = app->GetMainLayout()->GetScrollIndex();
             this->lastCursorPosition.push_back(index);
             this->lastScrollPosition.push_back(scroll);
-            this->LoadFiles(_pathname);
+            this->LoadFiles(this->GetFilePathName());
         }
         break;
+    }
+}
+
+void Browser::OpenFile()
+{
+    if (this->GetNumberOfSelected() > 1)
+        return;
+
+    bool isbin = fs::IsFileBinary(this->GetFilePathName());
+    std::string ext = this->GetFileExtension();
+
+    if (ext == "png" || ext == "jpeg" || ext == "jpg")
+    {
+
+    }
+    else if (ext == "zip" || ext == "rar")
+    {
+
+    }
+    else if (ext == "bin")
+    {
+
+    }
+    else if (!isbin)
+    {
+        int c = app->CreateShowDialog("Open in", "", {"Text viewer", "Cancel"}, true);
+        if (c == 0)
+        {
+            app->LoadLayout(app->GetTextLayout());
+            app->GetTextLayout()->Start(fs::ReadTextFile(this->GetFilePathName()), this->GetFilePathName());
+        }
     }
 }
 
@@ -89,12 +119,12 @@ void Browser::SelectFile()
     {
         case 0: // unselected
             app->GetMainLayout()->SetMenuElementIndexColor({10, 10, 10, 255}); // black
-            numberOfSelected--;
+            this->numberOfSelected--;
         break;
 
         case 1: // selected
             app->GetMainLayout()->SetMenuElementIndexColor({213, 160, 29, 255}); // gold
-            numberOfSelected++;
+            this->numberOfSelected++;
         break;
     }
 

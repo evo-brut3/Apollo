@@ -15,7 +15,7 @@ namespace ui
             void SetCursorPosition(u32 _cursor, u32 _scroll);
             void SetMenuElementIndexColor(pu::draw::Color _color);
             void SetLocationBarText(std::string _text);
-            void OpenAction(const std::string &_pathname);
+            void OpenAction();
             void SetOnFocus(bool _focus);
 
         private:

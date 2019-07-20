@@ -47,14 +47,14 @@ ROMFS		:=	romfs
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE -std=c++17
+ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fexceptions 
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fexceptions -std=gnu++17
 # -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
